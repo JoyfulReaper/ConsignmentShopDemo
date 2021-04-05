@@ -241,6 +241,7 @@ namespace ConsignmentShopUI
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "VendorMaintFrm";
             this.Text = "VendorMaintFrm";
+            this.Load += new System.EventHandler(this.VendorMaintFrm_Load);
             this.groupBoxVendors.ResumeLayout(false);
             this.groupBoxVendors.PerformLayout();
             this.ResumeLayout(false);

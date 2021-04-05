@@ -23,32 +23,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// This Program/Demo based on this video: https://www.youtube.com/watch?v=YxewTI4H2mY
-// Very much extended from the video
 
-// TODO ASP.net frontend / other UIs
+using ConsignmentShopLibrary.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-using System;
-using System.Windows.Forms;
-using ConsignmentShopLibrary.DataAccess;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace ConsignmentShopUI
+namespace ConsignmentShopLibrary
 {
-    static class Program
+    public interface IItemService
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            var serviceProvider = Bootstrap.Initialize(DatabaseType.MSSQL);
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            Application.Run(serviceProvider.GetRequiredService<ConsignmentShop>());
-        }
+        Task PurchaseItems(List<ItemModel> shoppingCart);
     }
 }

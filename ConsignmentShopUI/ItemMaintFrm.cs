@@ -39,15 +39,18 @@ namespace ConsignmentShopUI
         private readonly BindingList<ItemModel> items = new BindingList<ItemModel>();
         private readonly BindingList<VendorModel> vendors = new BindingList<VendorModel>();
 
-        private readonly IVendorData vendorData = new VendorData(GlobalConfig.Connection);
-        private readonly IItemData itemData = new ItemData(GlobalConfig.Connection);
+        private readonly IVendorData _vendorData;
+        private readonly IItemData _itemData;
 
         private bool editing = false;
         private ItemModel editingItem = null;
 
-        public ItemMaintFrm()
+        public ItemMaintFrm(IVendorData vendorData,
+            IItemData itemData)
         {
             InitializeComponent();
+            _vendorData = vendorData;
+            _itemData = itemData;
         }
 
         private async void ItemMaintFrm_Load(object sender, System.EventArgs e)
@@ -60,7 +63,7 @@ namespace ConsignmentShopUI
         {
             vendors.Clear();
 
-            var allVendors = await vendorData.LoadAllVendors();
+            var allVendors = await _vendorData.LoadAllVendors();
             allVendors = allVendors.OrderBy(x => x.LastName).ToList();
 
             foreach (var vendor in allVendors)
@@ -80,7 +83,7 @@ namespace ConsignmentShopUI
 
             if (radioButtonAll.Checked)
             {
-                currentItems = await itemData.LoadAllItems();
+                currentItems = await _itemData.LoadAllItems();
                 currentItems = currentItems.OrderBy(x => x.Name).ToList();
 
                 foreach (var item in currentItems)
@@ -90,7 +93,7 @@ namespace ConsignmentShopUI
             }
             else if (radioButtonSold.Checked)
             {
-                currentItems = await itemData.LoadSoldItems();
+                currentItems = await _itemData.LoadSoldItems();
                 currentItems = currentItems.OrderBy(x => x.Name).ToList();
 
                 foreach (var item in currentItems)
@@ -100,7 +103,7 @@ namespace ConsignmentShopUI
             }
             else if (radioButtonUnsold.Checked)
             {
-                currentItems = await itemData.LoadUnsoldItems();
+                currentItems = await _itemData.LoadUnsoldItems();
                 currentItems = currentItems.OrderBy(x => x.Name).ToList();
 
                 foreach (var item in currentItems)
@@ -134,7 +137,7 @@ namespace ConsignmentShopUI
                 return;
             }
 
-            itemData.RemoveItem(selectedItem);
+            _itemData.RemoveItem(selectedItem);
 
             UpdateItems();
         }
@@ -158,7 +161,7 @@ namespace ConsignmentShopUI
                 editingItem.Sold = checkBoxSold.Checked;
                 editingItem.PaymentDistributed = checkBoxVendorPaid.Checked;
 
-                itemData.UpdateItem(editingItem);
+                _itemData.UpdateItem(editingItem);
 
                 btnAddItem.Text = "Add Item";
                 btnEdit.Enabled = true;
@@ -177,7 +180,7 @@ namespace ConsignmentShopUI
                     Sold = checkBoxSold.Checked
                 };
 
-                await itemData.CreateItem(output);
+                await _itemData.CreateItem(output);
             }
 
             UpdateItems();
@@ -321,13 +324,13 @@ namespace ConsignmentShopUI
             }
             else
             {
-                var soldItems = await itemData.LoadSoldItems();
+                var soldItems = await _itemData.LoadSoldItems();
 
                 foreach(var item in soldItems)
                 {
                     if(item.PaymentDistributed)
                     {
-                        await itemData.RemoveItem(item);
+                        await _itemData.RemoveItem(item);
                     }
                     else
                     {

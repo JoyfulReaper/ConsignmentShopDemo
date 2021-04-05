@@ -37,24 +37,28 @@ namespace ConsignmentShopUI
     public partial class VendorMaintFrm : Form
     {
         private readonly BindingList<VendorModel> vendors = new BindingList<VendorModel>();
+
+        private readonly IVendorData _vendorData;
+        private readonly IVendorService _vendorService;
+
         private bool editing = false;
         private VendorModel editingVendor = null;
 
-        private readonly IVendorData vendorData = new VendorData(GlobalConfig.Connection);
 
 
-        public VendorMaintFrm()
+        public VendorMaintFrm(IVendorData vendorData,
+            IVendorService vendorService)
         {
             InitializeComponent();
-
-            UpdateVendors();
+            _vendorData = vendorData;
+            _vendorService = vendorService;
         }
 
         private async Task UpdateVendors()
         {
             vendors.Clear();
 
-            var allVendors = await vendorData.LoadAllVendors();
+            var allVendors = await _vendorData.LoadAllVendors();
             allVendors = allVendors.OrderBy(x => x.LastName).ToList();
 
             foreach (var v in allVendors)
@@ -92,7 +96,7 @@ namespace ConsignmentShopUI
 
                 textBoxCommison.Enabled = true;
 
-                vendorData.UpdateVendor(output);
+                _vendorData.UpdateVendor(output);
             }
             else
             {
@@ -103,7 +107,7 @@ namespace ConsignmentShopUI
                     CommissionRate = double.Parse(textBoxCommison.Text) / 100
                 };
 
-                await vendorData.CreateVendor(output);
+                await _vendorData.CreateVendor(output);
             }
 
             UpdateVendors();
@@ -178,7 +182,7 @@ namespace ConsignmentShopUI
 
             try
             {
-                await VendorHelper.RemoveVendor(selectedVendor);
+                await _vendorService.RemoveVendor(selectedVendor);
             }
             catch (InvalidOperationException ex)
             {
@@ -214,7 +218,7 @@ namespace ConsignmentShopUI
 
             try
             {
-                await VendorHelper.PayVendor(selectedVendor);
+                await _vendorService.PayVendor(selectedVendor);
             }
             catch (InvalidOperationException)
             {
@@ -247,6 +251,11 @@ namespace ConsignmentShopUI
 
             btnAddVendor.Text = "Update Vendor";
             btnEdit.Enabled = false;
+        }
+
+        private async void VendorMaintFrm_Load(object sender, EventArgs e)
+        {
+            await UpdateVendors();
         }
     }
 }

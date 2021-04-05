@@ -23,49 +23,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using ConsignmentShopLibrary;
+using ConsignmentShopLibrary.Data;
 using ConsignmentShopLibrary.DataAccess;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace ConsignmentShopLibrary
+namespace ConsignmentShopUI
 {
-    public static class GlobalConfig
+    internal static class Bootstrap
     {
-        public enum DatabaseType { MSSQL };
-
-        public static IDataAccess Connection { get; private set; }
-        public static IConfiguration Configuration { get; private set; }
-        public static DatabaseType DBType { get; private set; }
-
-        static GlobalConfig ()
+        public static IServiceProvider Initialize(DatabaseType db)
         {
-            Configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
-        }
+            var container = new ServiceCollection();
 
-        public static void Initialize(DatabaseType db)
-        {
-            // Set database type
+            IConfig config = new Config();
+            config.Initiliaze(db);
+
             if(db == DatabaseType.MSSQL)
             {
-                SqlDb sql = new SqlDb();
-                Connection = sql;
-                DBType = db;
-            }
-        }
-
-        public static string GetStoreName()
-        {
-            return Configuration.GetSection("Store:Name").Value;
-        }
-
-        public static string ConnectionString()
-        {
-            if (DBType == DatabaseType.MSSQL)
-            {
-                return Configuration.GetConnectionString("MSSQL");
+                container
+                    .AddSingleton<IDataAccess, SqlDb>()
+                    .AddSingleton<IItemData, ItemData>()
+                    .AddSingleton<IStoreData, StoreData>()
+                    .AddSingleton<IVendorData, VendorData>()
+                    .AddSingleton<IItemService, SQLItemService>()
+                    .AddSingleton<IVendorService, SQLVendorService>()
+                    .AddSingleton<IServiceCollection>(_ => container)
+                    .AddSingleton<ItemMaintFormFactory>()
+                    .AddSingleton<VendorMaintFormFactory>();
             }
 
-            throw new InvalidOperationException("DBType is not valid");
+            container
+                .AddSingleton(_ => config)
+                .AddTransient<ConsignmentShop>()
+                .AddTransient<ItemMaintFrm>()
+                .AddTransient<VendorMaintFrm>();
+
+            return container.BuildServiceProvider();
         }
     }
 }

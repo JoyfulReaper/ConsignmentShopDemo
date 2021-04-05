@@ -41,17 +41,32 @@ namespace ConsignmentShopUI
         private readonly BindingList<VendorModel> vendors = new BindingList<VendorModel>();
         private readonly BindingList<ItemModel> items = new BindingList<ItemModel>();
 
+        private readonly IStoreData _storeData;
+        private readonly IVendorData _vendorData;
+        private readonly IItemData _itemData;
+        private readonly IConfig _config;
+        private readonly IItemService _itemService;
+        private readonly ItemMaintFormFactory _itemMaintFormFactory;
+        private readonly VendorMaintFormFactory _vendorMaintFormFactory;
         private StoreModel store;
 
-        // Maybe some DI would be helpful for these, will have to look into it more
-        //TODO look into Dependency Injection
-        private readonly IStoreData storeData = new StoreData(GlobalConfig.Connection);
-        private readonly IVendorData vendorData = new VendorData(GlobalConfig.Connection);
-        private readonly IItemData itemData = new ItemData(GlobalConfig.Connection);
-
-        public ConsignmentShop()
+        public ConsignmentShop(IStoreData storeData,
+            IVendorData vendorData,
+            IItemData itemData,
+            IConfig config,
+            IItemService itemService,
+            ItemMaintFormFactory itemMaintFormFactory,
+            VendorMaintFormFactory vendorMaintFormFactory)
         {
             InitializeComponent();
+
+            _storeData = storeData;
+            _vendorData = vendorData;
+            _itemData = itemData;
+            _config = config;
+            _itemService = itemService;
+            _itemMaintFormFactory = itemMaintFormFactory;
+            _vendorMaintFormFactory = vendorMaintFormFactory;
         }
 
         private async void ConsignmentShop_Load(object sender, EventArgs e)
@@ -65,8 +80,8 @@ namespace ConsignmentShopUI
 
         private async Task SetupStore()
         {
-            string storeName = GlobalConfig.Configuration.GetSection("Store:Name").Value;
-            store = await storeData.LoadStore(storeName);
+            string storeName = _config.Configuration.GetSection("Store:Name").Value;
+            store = await _storeData.LoadStore(storeName);
         }
 
         private async Task SetupData()
@@ -84,7 +99,7 @@ namespace ConsignmentShopUI
 
         private async Task UpdateBankData()
         {
-            store = await storeData.LoadStore(store.Name);
+            store = await _storeData.LoadStore(store.Name);
 
             storeProfitValue.Text = $"{ store.StoreProfit:C2}";
             lblStoreBankValue.Text = $"{ store.StoreBank:C2}";
@@ -94,7 +109,7 @@ namespace ConsignmentShopUI
         {
             vendors.Clear();
 
-            var allVendors = await vendorData.LoadAllVendors();
+            var allVendors = await _vendorData.LoadAllVendors();
             allVendors = allVendors.OrderBy(x => x.LastName).ToList();
 
             foreach(VendorModel v in allVendors)
@@ -113,7 +128,7 @@ namespace ConsignmentShopUI
         {
             items.Clear();
 
-            var unsoldItems = await itemData.LoadUnsoldItems();
+            var unsoldItems = await _itemData.LoadUnsoldItems();
             unsoldItems = unsoldItems.OrderBy(x => x.Name).ToList();
 
             foreach (ItemModel itm in unsoldItems)
@@ -159,7 +174,7 @@ namespace ConsignmentShopUI
 
         private async void makePurchase_Click(object sender, EventArgs e)
         {
-            await ItemHelper.PurchaseItems(shoppingCart.ToList());
+            await _itemService.PurchaseItems(shoppingCart.ToList());
 
             shoppingCart.Clear();
 
@@ -194,8 +209,8 @@ namespace ConsignmentShopUI
                 return;
             }
 
-            ItemMaintFrm frm = new ItemMaintFrm();
-            frm.ShowDialog();
+            Form frm = _itemMaintFormFactory.CreateForm();
+            frm.ShowDialog(this);
 
             UpdateItems();
         }
@@ -232,7 +247,7 @@ namespace ConsignmentShopUI
                 return;
             }
 
-            VendorMaintFrm frm = new VendorMaintFrm();
+            Form frm = _vendorMaintFormFactory.CreateForm();
             frm.ShowDialog(this);
 
             await UpdateVendors();
