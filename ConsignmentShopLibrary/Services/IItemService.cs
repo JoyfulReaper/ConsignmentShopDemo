@@ -28,7 +28,7 @@ using ConsignmentShopLibrary.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ConsignmentShopLibrary
+namespace ConsignmentShopLibrary.Services
 {
     public interface IItemService
     {

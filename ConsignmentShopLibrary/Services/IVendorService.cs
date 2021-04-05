@@ -27,7 +27,7 @@ SOFTWARE.
 using ConsignmentShopLibrary.Models;
 using System.Threading.Tasks;
 
-namespace ConsignmentShopLibrary
+namespace ConsignmentShopLibrary.Services
 {
     public interface IVendorService
     {

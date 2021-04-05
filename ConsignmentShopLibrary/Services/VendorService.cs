@@ -29,7 +29,7 @@ using ConsignmentShopLibrary.Models;
 using System;
 using System.Threading.Tasks;
 
-namespace ConsignmentShopLibrary
+namespace ConsignmentShopLibrary.Services
 {
     public class VendorService : IVendorService
     {

@@ -30,7 +30,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ConsignmentShopLibrary.DataAccess
+namespace ConsignmentShopLibrary.DataAccess.MSSQL
 {
     public class SqlDb : IDataAccess
     {

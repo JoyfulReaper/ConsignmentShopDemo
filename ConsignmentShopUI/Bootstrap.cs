@@ -25,7 +25,12 @@ SOFTWARE.
 
 using ConsignmentShopLibrary;
 using ConsignmentShopLibrary.Data;
+using ConsignmentShopLibrary.Data.MSSQL;
+using ConsignmentShopLibrary.Data.SQLite;
 using ConsignmentShopLibrary.DataAccess;
+using ConsignmentShopLibrary.DataAccess.MSSQL;
+using ConsignmentShopLibrary.DataAccess.SQLite;
+using ConsignmentShopLibrary.Services;
 using ConsignmentShopUI.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using System;

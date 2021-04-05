@@ -4,7 +4,7 @@ using Dapper;
 using System;
 using System.Data;
 
-namespace ConsignmentShopLibrary.DataAccess
+namespace ConsignmentShopLibrary.DataAccess.SQLite
 {
     abstract class SqliteTypeHandler<T> : SqlMapper.TypeHandler<T>
     {

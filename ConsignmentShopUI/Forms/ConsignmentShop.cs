@@ -33,6 +33,7 @@ using System.Linq;
 using ConsignmentShopLibrary.Data;
 using System.Threading.Tasks;
 using ConsignmentShopUI.Factories;
+using ConsignmentShopLibrary.Services;
 
 namespace ConsignmentShopUI
 {

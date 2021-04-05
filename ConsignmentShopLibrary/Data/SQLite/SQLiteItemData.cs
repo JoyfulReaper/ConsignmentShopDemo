@@ -31,7 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsignmentShopLibrary.Data
+namespace ConsignmentShopLibrary.Data.SQLite
 {
     public class SQLiteItemData : IItemData
     {

@@ -31,7 +31,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ConsignmentShopLibrary.Data
+namespace ConsignmentShopLibrary.Data.MSSQL
 {
     public class StoreData : IStoreData
     {

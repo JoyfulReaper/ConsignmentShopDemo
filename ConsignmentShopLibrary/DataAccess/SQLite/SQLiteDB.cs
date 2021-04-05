@@ -34,7 +34,7 @@ using System.Data.Common;
 using System.IO;
 using ConsignmentShopLibrary.Properties;
 
-namespace ConsignmentShopLibrary.DataAccess
+namespace ConsignmentShopLibrary.DataAccess.SQLite
 {
     public class SQLiteDB : IDataAccess
     {

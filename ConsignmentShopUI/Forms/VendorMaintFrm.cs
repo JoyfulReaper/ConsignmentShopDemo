@@ -23,9 +23,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using ConsignmentShopLibrary;
 using ConsignmentShopLibrary.Data;
 using ConsignmentShopLibrary.Models;
+using ConsignmentShopLibrary.Services;
 using System;
 using System.ComponentModel;
 using System.Linq;
