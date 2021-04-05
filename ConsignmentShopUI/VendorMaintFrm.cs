@@ -36,13 +36,13 @@ namespace ConsignmentShopUI
 {
     public partial class VendorMaintFrm : Form
     {
-        private readonly BindingList<VendorModel> vendors = new BindingList<VendorModel>();
+        private readonly BindingList<VendorModel> _vendors = new BindingList<VendorModel>();
 
         private readonly IVendorData _vendorData;
         private readonly IVendorService _vendorService;
 
-        private bool editing = false;
-        private VendorModel editingVendor = null;
+        private bool _editing = false;
+        private VendorModel _editingVendor = null;
 
 
 
@@ -56,21 +56,21 @@ namespace ConsignmentShopUI
 
         private async Task UpdateVendors()
         {
-            vendors.Clear();
+            _vendors.Clear();
 
             var allVendors = await _vendorData.LoadAllVendors();
             allVendors = allVendors.OrderBy(x => x.LastName).ToList();
 
             foreach (var v in allVendors)
             {
-                vendors.Add(v);
+                _vendors.Add(v);
             }
 
-            listBoxVendors.DataSource = vendors;
+            listBoxVendors.DataSource = _vendors;
             listBoxVendors.DisplayMember = "Display";
             listBoxVendors.ValueMember = "Display";
 
-            vendors.ResetBindings();
+            _vendors.ResetBindings();
         }
 
         private async void btnAddVendor_Click(object sender, System.EventArgs e)
@@ -82,17 +82,17 @@ namespace ConsignmentShopUI
                 return;
             }
 
-            if (editing)
+            if (_editing)
             {
-                editingVendor.FirstName = textBoxFirstName.Text;
-                editingVendor.LastName = textBoxLastName.Text;
-                editingVendor.CommissionRate = double.Parse(textBoxCommison.Text) / 100;
+                _editingVendor.FirstName = textBoxFirstName.Text;
+                _editingVendor.LastName = textBoxLastName.Text;
+                _editingVendor.CommissionRate = double.Parse(textBoxCommison.Text) / 100;
 
                 btnAddVendor.Text = "Add Vendor";
                 btnEdit.Enabled = true;
-                editing = false;
+                _editing = false;
 
-                output = editingVendor;
+                output = _editingVendor;
 
                 textBoxCommison.Enabled = true;
 
@@ -231,19 +231,19 @@ namespace ConsignmentShopUI
         private void btnEdit_Click(object sender, System.EventArgs e)
         {
             VendorModel selectedVendor = (VendorModel)listBoxVendors.SelectedItem;
-            editingVendor = selectedVendor;
+            _editingVendor = selectedVendor;
 
             if (selectedVendor == null)
             {
                 return;
             }
 
-            if (editingVendor.PaymentDue > 0)
+            if (_editingVendor.PaymentDue > 0)
             {
                 textBoxCommison.Enabled = false;
             }
 
-            editing = true;
+            _editing = true;
 
             PopulateVendorTextBoxes();
 

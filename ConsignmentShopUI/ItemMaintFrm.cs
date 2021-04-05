@@ -36,14 +36,14 @@ namespace ConsignmentShopUI
 {
     public partial class ItemMaintFrm : Form
     {
-        private readonly BindingList<ItemModel> items = new BindingList<ItemModel>();
-        private readonly BindingList<VendorModel> vendors = new BindingList<VendorModel>();
+        private readonly BindingList<ItemModel> _items = new BindingList<ItemModel>();
+        private readonly BindingList<VendorModel> _vendors = new BindingList<VendorModel>();
 
         private readonly IVendorData _vendorData;
         private readonly IItemData _itemData;
 
-        private bool editing = false;
-        private ItemModel editingItem = null;
+        private bool _editing = false;
+        private ItemModel _editingItem = null;
 
         public ItemMaintFrm(IVendorData vendorData,
             IItemData itemData)
@@ -61,24 +61,24 @@ namespace ConsignmentShopUI
 
         private async Task UpdateVendors()
         {
-            vendors.Clear();
+            _vendors.Clear();
 
             var allVendors = await _vendorData.LoadAllVendors();
             allVendors = allVendors.OrderBy(x => x.LastName).ToList();
 
             foreach (var vendor in allVendors)
             {
-                vendors.Add(vendor);
+                _vendors.Add(vendor);
             }
 
-            listBoxVendors.DataSource = vendors;
+            listBoxVendors.DataSource = _vendors;
             listBoxVendors.DisplayMember = "FullName";
             listBoxVendors.ValueMember = "FullName";
         }
 
         private async Task UpdateItems()
         {
-            items.Clear();
+            _items.Clear();
             List<ItemModel> currentItems = new List<ItemModel>();
 
             if (radioButtonAll.Checked)
@@ -88,7 +88,7 @@ namespace ConsignmentShopUI
 
                 foreach (var item in currentItems)
                 {
-                    items.Add(item);
+                    _items.Add(item);
                 }
             }
             else if (radioButtonSold.Checked)
@@ -98,7 +98,7 @@ namespace ConsignmentShopUI
 
                 foreach (var item in currentItems)
                 {
-                    items.Add(item);
+                    _items.Add(item);
                 }
             }
             else if (radioButtonUnsold.Checked)
@@ -108,15 +108,15 @@ namespace ConsignmentShopUI
 
                 foreach (var item in currentItems)
                 {
-                    items.Add(item);
+                    _items.Add(item);
                 }
             }
 
-            allItemsListBox.DataSource = items;
+            allItemsListBox.DataSource = _items;
             allItemsListBox.DisplayMember = "Display";
             allItemsListBox.ValueMember = "Display";
 
-            items.ResetBindings();
+            _items.ResetBindings();
         }
 
         private void btnItemDelete_Click(object sender, System.EventArgs e)
@@ -151,23 +151,23 @@ namespace ConsignmentShopUI
                 return;
             }
 
-            if(editing)
+            if(_editing)
             {
-                editingItem.Name = textBoxName.Text;
-                editingItem.Price = decimal.Parse(textBoxPrice.Text);
-                editingItem.Description = textBoxDesc.Text;
-                editingItem.Owner = (VendorModel)listBoxVendors.SelectedItem;
-                editingItem.OwnerId = editingItem.Owner.Id;
-                editingItem.Sold = checkBoxSold.Checked;
-                editingItem.PaymentDistributed = checkBoxVendorPaid.Checked;
+                _editingItem.Name = textBoxName.Text;
+                _editingItem.Price = decimal.Parse(textBoxPrice.Text);
+                _editingItem.Description = textBoxDesc.Text;
+                _editingItem.Owner = (VendorModel)listBoxVendors.SelectedItem;
+                _editingItem.OwnerId = _editingItem.Owner.Id;
+                _editingItem.Sold = checkBoxSold.Checked;
+                _editingItem.PaymentDistributed = checkBoxVendorPaid.Checked;
 
-                _itemData.UpdateItem(editingItem);
+                _itemData.UpdateItem(_editingItem);
 
                 btnAddItem.Text = "Add Item";
                 btnEdit.Enabled = true;
-                editing = false;
+                _editing = false;
 
-                output = editingItem;
+                output = _editingItem;
             }
             else
             {
@@ -245,7 +245,7 @@ namespace ConsignmentShopUI
         private void btnEdit_Click(object sender, System.EventArgs e)
         {
             ItemModel selectedItem = (ItemModel)allItemsListBox.SelectedItem;
-            editingItem = selectedItem;
+            _editingItem = selectedItem;
 
             if(selectedItem == null)
             {
@@ -258,7 +258,7 @@ namespace ConsignmentShopUI
                 return;
             }
 
-            editing = true;
+            _editing = true;
 
             PopulateItemTextBoxes();
 
@@ -285,14 +285,14 @@ namespace ConsignmentShopUI
             checkBoxVendorPaid.Checked = selectedItem.PaymentDistributed;
 
             //There has to be a better way of doing this:
-            var vendor = vendors.Where(x => x.Id == selectedItem.Owner.Id).First();
+            var vendor = _vendors.Where(x => x.Id == selectedItem.Owner.Id).First();
             listBoxVendors.SelectedItem = vendor; 
 
             // The below does not work, I think becasue the object reference is not equal
             //var vendor = selectedItem.Owner;
             //listBoxVendors.SelectedItem = vendor;
 
-            vendors.ResetBindings();
+            _vendors.ResetBindings();
         }
 
         private async void radioButtonOption_CheckedChanged(object sender, System.EventArgs e)

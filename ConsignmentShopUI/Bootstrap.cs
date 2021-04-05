@@ -26,6 +26,7 @@ SOFTWARE.
 using ConsignmentShopLibrary;
 using ConsignmentShopLibrary.Data;
 using ConsignmentShopLibrary.DataAccess;
+using ConsignmentShopUI.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 

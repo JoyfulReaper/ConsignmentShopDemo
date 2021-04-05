@@ -35,11 +35,11 @@ namespace ConsignmentShopLibrary.Data
 {
     public class ItemData : IItemData
     {
-        private readonly IDataAccess dataAccess;
+        private readonly IDataAccess _dataAccess;
 
         public ItemData(IDataAccess dataAccess)
         {
-            this.dataAccess = dataAccess;
+            _dataAccess = dataAccess;
         }
 
         public async Task<int> CreateItem(ItemModel item)
@@ -54,14 +54,14 @@ namespace ConsignmentShopLibrary.Data
             p.Add("PaymentDistributed", item.PaymentDistributed);
             p.Add("Id", 0, DbType.Int32, direction: ParameterDirection.Output);
 
-            await dataAccess.SaveData("dbo.spItems_Insert", p);
+            await _dataAccess.SaveData("dbo.spItems_Insert", p);
 
             return p.Get<int>("Id");
         }
 
         public Task<int> UpdateItem(ItemModel item)
         {
-            return dataAccess.SaveData("dbo.spItems_Update", new
+            return _dataAccess.SaveData("dbo.spItems_Update", new
             {
                 Id = item.Id,
                 Name = item.Name,
@@ -75,7 +75,7 @@ namespace ConsignmentShopLibrary.Data
 
         public async Task<List<ItemModel>> LoadAllItems()
         {
-            var allItems = await dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetAll", new { });
+            var allItems = await _dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetAll", new { });
 
             await AssignOwner(allItems);
 
@@ -84,7 +84,7 @@ namespace ConsignmentShopLibrary.Data
 
         public async Task<List<ItemModel>> LoadUnsoldItems()
         {
-            var unsoldItems = await dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetUnsold", new { });
+            var unsoldItems = await _dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetUnsold", new { });
 
             await AssignOwner(unsoldItems);
 
@@ -93,7 +93,7 @@ namespace ConsignmentShopLibrary.Data
 
         public async Task<List<ItemModel>> LoadSoldItems()
         {
-            var soldItems = await dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetSold", new { });
+            var soldItems = await _dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetSold", new { });
 
             await AssignOwner(soldItems);
 
@@ -102,7 +102,7 @@ namespace ConsignmentShopLibrary.Data
 
         public async Task<List<ItemModel>> LoadSoldItemsByVendor(VendorModel vendor)
         {
-            var soldItems = await dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetSoldByVendorId", new { OwnerId = vendor.Id });
+            var soldItems = await _dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetSoldByVendorId", new { OwnerId = vendor.Id });
 
             foreach (var item in soldItems)
             {
@@ -114,7 +114,7 @@ namespace ConsignmentShopLibrary.Data
 
         public async Task<List<ItemModel>> LoadItemsByVendor(VendorModel vendor)
         {
-            var vendorItems = await dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetByVendorId", new { OwnerId = vendor.Id });
+            var vendorItems = await _dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetByVendorId", new { OwnerId = vendor.Id });
 
             foreach (var item in vendorItems)
             {
@@ -126,14 +126,14 @@ namespace ConsignmentShopLibrary.Data
 
         public Task RemoveItem(ItemModel item)
         {
-            return dataAccess.SaveData("dbo.spItems_Delete", new { Id = item.Id });
+            return _dataAccess.SaveData("dbo.spItems_Delete", new { Id = item.Id });
         }
 
         private async Task AssignOwner(List<ItemModel> allItems)
         {
             foreach (var item in allItems)
             {
-                var owner = await dataAccess.LoadData<VendorModel, dynamic>("dbo.spVendors_Get", new { Id = item.OwnerId});
+                var owner = await _dataAccess.LoadData<VendorModel, dynamic>("dbo.spVendors_Get", new { Id = item.OwnerId});
                 item.Owner = owner.First();
             }
         }
