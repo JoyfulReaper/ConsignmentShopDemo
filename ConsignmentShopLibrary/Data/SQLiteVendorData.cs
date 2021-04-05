@@ -47,7 +47,7 @@ namespace ConsignmentShopLibrary.Data
         {
             StringBuilder sql = new StringBuilder();
             sql.Append("UPDATE Vendors ");
-            sql.Append("SET FirstName = @FirstName, LastName = @LastName, CommissionRate = @CommissionRate, PaymentDue = @PaymentDue");
+            sql.Append("SET FirstName = @FirstName, LastName = @LastName, CommissionRate = @CommissionRate, PaymentDue = @PaymentDue ");
             sql.Append("WHERE Id = @Id");
 
             return _dataAccess.ExecuteRawSQL<dynamic>(sql.ToString(), vendor);

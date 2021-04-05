@@ -48,6 +48,8 @@ namespace ConsignmentShopLibrary.Data
             sql.Append("insert into Items (Name, Description, Price, Sold, OwnerId, PaymentDistributed) ");
             sql.Append("values (@Name, @Description, @Price, @Sold, @OwnerId, @PaymentDistributed);");
 
+            item.OwnerId = item.Owner.Id;
+
             var sqlResult = await _dataAccess.ExecuteRawSQL<dynamic>(sql.ToString(), item);
             var queryResult = await _dataAccess.QueryRawSQL<Int64, dynamic>("select last_insert_rowid();", new { });
 
@@ -97,7 +99,7 @@ namespace ConsignmentShopLibrary.Data
             sql.Append("select [Id], [Name], [Description], [Price], [Sold], [OwnerId], [PaymentDistributed] ");
             sql.Append("from Items where OwnerId = @OwnerId and Sold = 1;");
 
-            var sqlResult = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql.ToString(), vendor);
+            var sqlResult = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql.ToString(), new { OwnerId = vendor.Id });
             sqlResult.ForEach(x => x.Owner = vendor);
 
             return sqlResult;
