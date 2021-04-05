@@ -16,18 +16,20 @@ namespace ConsignmentShopLibrary
             Configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
         }
 
-        public void Initiliaze(DatabaseType db)
+        public void Initiliaze()
         {
+            var databaseSetting = Configuration.GetSection("DatabaseType").Value;
+
             // Set database type
-            if (db == DatabaseType.MSSQL)
+            if (databaseSetting == "MSSQL")
             {
                 SqlDb sql = new SqlDb(this);
                 Connection = sql;
-                DBType = db;
+                DBType = DatabaseType.MSSQL;
             }
             else
             {
-                throw new ArgumentException("Invalid Database", nameof(db));
+                throw new InvalidOperationException($"{databaseSetting} is not a supported database type.");
             }
         }
 

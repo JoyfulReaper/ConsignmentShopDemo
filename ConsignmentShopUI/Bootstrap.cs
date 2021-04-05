@@ -39,7 +39,7 @@ namespace ConsignmentShopUI
             var container = new ServiceCollection();
 
             IConfig config = new Config();
-            config.Initiliaze(db);
+            config.Initiliaze();
 
             if(db == DatabaseType.MSSQL)
             {

@@ -10,6 +10,6 @@ namespace ConsignmentShopLibrary
         DatabaseType DBType { get; }
 
         string ConnectionString();
-        void Initiliaze(DatabaseType db);
+        void Initiliaze();
     }
 }

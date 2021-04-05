@@ -16,34 +16,34 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="ConsignmentShop.cs">
+    <Compile Update="Forms\ConsignmentShop.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="ConsignmentShop.Designer.cs">
+    <Compile Update="Forms\ConsignmentShop.Designer.cs">
       <DependentUpon>ConsignmentShop.cs</DependentUpon>
     </Compile>
-    <Compile Update="ItemMaintFrm.cs">
+    <Compile Update="Forms\ItemMaintFrm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="ItemMaintFrm.Designer.cs">
+    <Compile Update="Forms\ItemMaintFrm.Designer.cs">
       <DependentUpon>ItemMaintFrm.cs</DependentUpon>
     </Compile>
-    <Compile Update="VendorMaintFrm.cs">
+    <Compile Update="Forms\VendorMaintFrm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="VendorMaintFrm.Designer.cs">
+    <Compile Update="Forms\VendorMaintFrm.Designer.cs">
       <DependentUpon>VendorMaintFrm.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="ConsignmentShop.resx">
+    <EmbeddedResource Update="Forms\ConsignmentShop.resx">
       <DependentUpon>ConsignmentShop.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Update="ItemMaintFrm.resx">
+    <EmbeddedResource Update="Forms\ItemMaintFrm.resx">
       <DependentUpon>ItemMaintFrm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Update="VendorMaintFrm.resx">
+    <EmbeddedResource Update="Forms\VendorMaintFrm.resx">
       <DependentUpon>VendorMaintFrm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
