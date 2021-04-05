@@ -27,7 +27,7 @@ namespace ConsignmentShopLibrary
             }
             else
             {
-                throw new ArgumentException("Invalid Database", "db");
+                throw new ArgumentException("Invalid Database", nameof(db));
             }
         }
 
