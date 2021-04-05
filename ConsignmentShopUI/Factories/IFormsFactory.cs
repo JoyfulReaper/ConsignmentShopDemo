@@ -1,7 +1,7 @@
 ﻿/*
 MIT License
 
-Copyright(c) 2020 Kyle Givler
+Copyright(c) 2021 Kyle Givler
 https://github.com/JoyfulReaper
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,19 +23,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace ConsignmentShopLibrary.DataAccess
+namespace ConsignmentShopUI.Factories
 {
-    public interface IDataAccess
+    public interface IFormsFactory
     {
-        Task<List<T>> LoadData<T, U>(string storedProcedure, U parameters);
-
-        Task<int> SaveData<T>(string storedProcedure, T parameters);
-
-        Task<List<T>> QueryRawSQL<T, U>(string sql, U parameters);
-
-        Task<int> ExecuteRawSQL<T>(string sql, T parameters);
+        Form CreateForm();
     }
 }

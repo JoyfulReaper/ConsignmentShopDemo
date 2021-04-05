@@ -30,21 +30,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ConsignmentShopLibrary
+namespace ConsignmentShopLibrary.Services
 {
-    public static class ItemHelper
+    public class ItemService : IItemService
     {
-        public async static Task PurchaseItems(List<ItemModel> shoppingCart)
-        {
-            IVendorData vendorData = new VendorData(GlobalConfig.Connection);
-            IItemData itemData = new ItemData(GlobalConfig.Connection);
-            IStoreData storeData = new StoreData(GlobalConfig.Connection);
+        private readonly IConfig _config;
+        private readonly IVendorData _vendorData;
+        private readonly IStoreData _storeData;
+        private readonly IItemData _itemData;
 
-            StoreModel store = await storeData.LoadStore(GlobalConfig.GetStoreName());
+        public ItemService(IConfig config,
+            IVendorData vendorData,
+            IStoreData storeData,
+            IItemData itemData)
+        {
+            _config = config;
+            _vendorData = vendorData;
+            _storeData = storeData;
+            _itemData = itemData;
+        }
+
+        public async Task PurchaseItems(List<ItemModel> shoppingCart)
+        {
+            StoreModel store = await _storeData.LoadStore(_config.Configuration.GetSection("Store:Name").Value);
 
             foreach (ItemModel item in shoppingCart)
             {
-                var PayementDueFromDbList = await GlobalConfig.Connection.QueryRawSQL<decimal, dynamic>($"select PaymentDue from Vendors where Id = {item.Owner.Id};", new { });
+                var PayementDueFromDbList = await _config.Connection.QueryRawSQL<decimal, dynamic>($"select PaymentDue from Vendors where Id = {item.Owner.Id};", new { });
                 decimal paymentDueFromDb = PayementDueFromDbList.First();
 
                 item.Owner.PaymentDue += paymentDueFromDb;
@@ -55,9 +67,9 @@ namespace ConsignmentShopLibrary
                 store.StoreProfit += (1 - (decimal)item.Owner.CommissionRate) * item.Price;
                 store.StoreBank += item.Price;
 
-                await itemData.UpdateItem(item);
-                await vendorData.UpdateVendor(item.Owner);
-                await storeData.UpdateStore(store);
+                await _itemData.UpdateItem(item);
+                await _vendorData.UpdateVendor(item.Owner);
+                await _storeData.UpdateStore(store);
             }
         }
     }

@@ -24,45 +24,57 @@ SOFTWARE.
 */
 
 using ConsignmentShopLibrary.DataAccess;
+using ConsignmentShopLibrary.DataAccess.MSSQL;
+using ConsignmentShopLibrary.DataAccess.SQLite;
 using Microsoft.Extensions.Configuration;
 using System;
 
 namespace ConsignmentShopLibrary
 {
-    public static class GlobalConfig
+    public partial class Config : IConfig
     {
-        public enum DatabaseType { MSSQL };
 
-        public static IDataAccess Connection { get; private set; }
-        public static IConfiguration Configuration { get; private set; }
-        public static DatabaseType DBType { get; private set; }
+        public IDataAccess Connection { get; private set; }
+        public IConfiguration Configuration { get; private set; }
+        public DatabaseType DBType { get; private set; }
 
-        static GlobalConfig ()
+        public Config()
         {
             Configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
         }
 
-        public static void Initialize(DatabaseType db)
+        public void Initiliaze()
         {
+            var databaseSetting = Configuration.GetSection("DatabaseType").Value;
+
             // Set database type
-            if(db == DatabaseType.MSSQL)
+            if (databaseSetting == "MSSQL")
             {
-                SqlDb sql = new SqlDb();
+                DBType = DatabaseType.MSSQL;
+                SqlDb sql = new SqlDb(this);
                 Connection = sql;
-                DBType = db;
+            }
+            else if (databaseSetting == "SQLite")
+            {
+                DBType = DatabaseType.SQLite;
+                SQLiteDB sql = new SQLiteDB(this);
+                Connection = sql;
+            }
+            else
+            {
+                throw new InvalidOperationException($"{databaseSetting} is not a supported database type.");
             }
         }
 
-        public static string GetStoreName()
-        {
-            return Configuration.GetSection("Store:Name").Value;
-        }
-
-        public static string ConnectionString()
+        public string ConnectionString()
         {
             if (DBType == DatabaseType.MSSQL)
             {
                 return Configuration.GetConnectionString("MSSQL");
+            }
+            else if (DBType == DatabaseType.SQLite)
+            {
+                return Configuration.GetConnectionString("SQLite");
             }
 
             throw new InvalidOperationException("DBType is not valid");

@@ -30,7 +30,7 @@ SOFTWARE.
 
 using System;
 using System.Windows.Forms;
-using ConsignmentShopLibrary;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ConsignmentShopUI
 {
@@ -42,12 +42,12 @@ namespace ConsignmentShopUI
         [STAThread]
         static void Main()
         {
+            var serviceProvider = Bootstrap.Initialize();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GlobalConfig.Initialize(GlobalConfig.DatabaseType.MSSQL);
-
-            Application.Run(new ConsignmentShop());
+            Application.Run(serviceProvider.GetRequiredService<ConsignmentShop>());
         }
     }
 }

@@ -1,0 +1,4 @@
+Version 1.5.0 - 04/05/2021
+	- Added SQLite support
+	- Changed Default DB to SQLite
+	- Tested, but possible some bugs remain

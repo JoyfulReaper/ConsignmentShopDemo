@@ -32,26 +32,44 @@ using System.Diagnostics;
 using System.Linq;
 using ConsignmentShopLibrary.Data;
 using System.Threading.Tasks;
+using ConsignmentShopUI.Factories;
+using ConsignmentShopLibrary.Services;
 
 namespace ConsignmentShopUI
 {
     public partial class ConsignmentShop : Form
     {
-        private readonly BindingList<ItemModel> shoppingCart = new BindingList<ItemModel>();
-        private readonly BindingList<VendorModel> vendors = new BindingList<VendorModel>();
-        private readonly BindingList<ItemModel> items = new BindingList<ItemModel>();
+        private readonly BindingList<ItemModel> _shoppingCart = new BindingList<ItemModel>();
+        private readonly BindingList<VendorModel> _vendors = new BindingList<VendorModel>();
+        private readonly BindingList<ItemModel> _items = new BindingList<ItemModel>();
 
-        private StoreModel store;
+        private readonly IStoreData _storeData;
+        private readonly IVendorData _vendorData;
+        private readonly IItemData _itemData;
+        private readonly IConfig _config;
+        private readonly IItemService _itemService;
+        private readonly ItemMaintFormFactory _itemMaintFormFactory;
+        private readonly VendorMaintFormFactory _vendorMaintFormFactory;
 
-        // Maybe some DI would be helpful for these, will have to look into it more
-        //TODO look into Dependency Injection
-        private readonly IStoreData storeData = new StoreData(GlobalConfig.Connection);
-        private readonly IVendorData vendorData = new VendorData(GlobalConfig.Connection);
-        private readonly IItemData itemData = new ItemData(GlobalConfig.Connection);
+        private StoreModel _store;
 
-        public ConsignmentShop()
+        public ConsignmentShop(IStoreData storeData,
+            IVendorData vendorData,
+            IItemData itemData,
+            IConfig config,
+            IItemService itemService,
+            ItemMaintFormFactory itemMaintFormFactory,
+            VendorMaintFormFactory vendorMaintFormFactory)
         {
             InitializeComponent();
+
+            _storeData = storeData;
+            _vendorData = vendorData;
+            _itemData = itemData;
+            _config = config;
+            _itemService = itemService;
+            _itemMaintFormFactory = itemMaintFormFactory;
+            _vendorMaintFormFactory = vendorMaintFormFactory;
         }
 
         private async void ConsignmentShop_Load(object sender, EventArgs e)
@@ -65,17 +83,17 @@ namespace ConsignmentShopUI
 
         private async Task SetupStore()
         {
-            string storeName = GlobalConfig.Configuration.GetSection("Store:Name").Value;
-            store = await storeData.LoadStore(storeName);
+            string storeName = _config.Configuration.GetSection("Store:Name").Value;
+            _store = await _storeData.LoadStore(storeName);
         }
 
         private async Task SetupData()
         {
-            shoppingCartListBox.DataSource = shoppingCart;
+            shoppingCartListBox.DataSource = _shoppingCart;
             shoppingCartListBox.DisplayMember = "Display";
             shoppingCartListBox.ValueMember = "Display";
 
-            lblStoreName.Text = store.Name;
+            lblStoreName.Text = _store.Name;
 
             await UpdateVendors();
             await UpdateItems();
@@ -84,48 +102,48 @@ namespace ConsignmentShopUI
 
         private async Task UpdateBankData()
         {
-            store = await storeData.LoadStore(store.Name);
+            _store = await _storeData.LoadStore(_store.Name);
 
-            storeProfitValue.Text = $"{ store.StoreProfit:C2}";
-            lblStoreBankValue.Text = $"{ store.StoreBank:C2}";
+            storeProfitValue.Text = $"{ _store.StoreProfit:C2}";
+            lblStoreBankValue.Text = $"{ _store.StoreBank:C2}";
         }
 
         private async Task UpdateVendors()
         {
-            vendors.Clear();
+            _vendors.Clear();
 
-            var allVendors = await vendorData.LoadAllVendors();
+            var allVendors = await _vendorData.LoadAllVendors();
             allVendors = allVendors.OrderBy(x => x.LastName).ToList();
 
             foreach(VendorModel v in allVendors)
             {
-                vendors.Add(v);
+                _vendors.Add(v);
             }
 
-            vendorListBox.DataSource = vendors;
+            vendorListBox.DataSource = _vendors;
             vendorListBox.DisplayMember = "Display";
             vendorListBox.ValueMember = "Display";
 
-            vendors.ResetBindings();
+            _vendors.ResetBindings();
         }
 
         private async Task UpdateItems()
         {
-            items.Clear();
+            _items.Clear();
 
-            var unsoldItems = await itemData.LoadUnsoldItems();
+            var unsoldItems = await _itemData.LoadUnsoldItems();
             unsoldItems = unsoldItems.OrderBy(x => x.Name).ToList();
 
             foreach (ItemModel itm in unsoldItems)
             {
-                items.Add(itm);
+                _items.Add(itm);
             }
 
-            itemsListbox.DataSource = items;
+            itemsListbox.DataSource = _items;
             itemsListbox.DisplayMember = "Display";
             itemsListbox.ValueMember = "Display";
 
-            items.ResetBindings();
+            _items.ResetBindings();
         }
 
         private void addToCart_Click(object sender, EventArgs e)
@@ -137,8 +155,8 @@ namespace ConsignmentShopUI
                 return;
             }
 
-            items.Remove(selectedItem); // Remove from available items
-            shoppingCart.Add(selectedItem); // Add to shopping cart
+            _items.Remove(selectedItem); // Remove from available items
+            _shoppingCart.Add(selectedItem); // Add to shopping cart
 
             itemsListbox_SelectedIndexChanged(this, EventArgs.Empty);
 
@@ -149,7 +167,7 @@ namespace ConsignmentShopUI
         {
             decimal total = 0;
 
-            foreach (var item in shoppingCart)
+            foreach (var item in _shoppingCart)
             {
                 total += item.Price;
             }
@@ -159,9 +177,9 @@ namespace ConsignmentShopUI
 
         private async void makePurchase_Click(object sender, EventArgs e)
         {
-            await ItemHelper.PurchaseItems(shoppingCart.ToList());
+            await _itemService.PurchaseItems(_shoppingCart.ToList());
 
-            shoppingCart.Clear();
+            _shoppingCart.Clear();
 
             UpdateVendors();
             UpdateItems();
@@ -180,22 +198,22 @@ namespace ConsignmentShopUI
                 return;
             }
 
-            items.Add(selectedItem);
-            shoppingCart.Remove(selectedItem);
+            _items.Add(selectedItem);
+            _shoppingCart.Remove(selectedItem);
 
             UpdateTotal();
         }
 
         private void btnItemMaint_Click(object sender, EventArgs e)
         {
-            if (shoppingCart.Count > 0)
+            if (_shoppingCart.Count > 0)
             {
                 MessageBox.Show("Item maintenance cannnot be performed during a transaction.");
                 return;
             }
 
-            ItemMaintFrm frm = new ItemMaintFrm();
-            frm.ShowDialog();
+            Form frm = _itemMaintFormFactory.CreateForm();
+            frm.ShowDialog(this);
 
             UpdateItems();
         }
@@ -226,13 +244,13 @@ namespace ConsignmentShopUI
 
         private async void btnVenderMaint_Click(object sender, EventArgs e)
         {
-            if(shoppingCart.Count > 0)
+            if(_shoppingCart.Count > 0)
             {
                 MessageBox.Show("Vendor maintenance cannnot be performed during a transaction.");
                 return;
             }
 
-            VendorMaintFrm frm = new VendorMaintFrm();
+            Form frm = _vendorMaintFormFactory.CreateForm();
             frm.ShowDialog(this);
 
             await UpdateVendors();
@@ -247,43 +265,43 @@ namespace ConsignmentShopUI
 
         private void SetupDemoData()
         {
-            vendors.Add(new VendorModel { FirstName = "Bill", LastName = "Smith" });
-            vendors.Add(new VendorModel { FirstName = "Sue", LastName = "Jones" });
+            _vendors.Add(new VendorModel { FirstName = "Bill", LastName = "Smith" });
+            _vendors.Add(new VendorModel { FirstName = "Sue", LastName = "Jones" });
 
-            items.Add(new ItemModel
+            _items.Add(new ItemModel
             {
                 Name = "Moby Dick",
                 Description = "A book about a whale",
                 Price = 4.50M,
-                Owner = vendors[0]
+                Owner = _vendors[0]
             });
 
-            items.Add(new ItemModel
+            _items.Add(new ItemModel
             {
                 Name = "A Tale of Two Cities",
                 Description = "A book about a revolution",
                 Price = 3.80M,
-                Owner = vendors[1]
+                Owner = _vendors[1]
             });
 
-            items.Add(new ItemModel
+            _items.Add(new ItemModel
             {
                 Name = "Harry Potter Book 1",
                 Description = "A book about a boy",
                 Price = 5.20M,
-                Owner = vendors[1]
+                Owner = _vendors[1]
             });
 
-            items.Add(new ItemModel
+            _items.Add(new ItemModel
             {
                 Name = "Jane Eyre",
                 Description = "A book about a girl",
                 Price = 1.50M,
-                Owner = vendors[0]
+                Owner = _vendors[0]
             });
 
-            vendors.ResetBindings();
-            items.ResetBindings();
+            _vendors.ResetBindings();
+            _items.ResetBindings();
         }
     }
 }

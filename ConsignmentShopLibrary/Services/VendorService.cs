@@ -27,28 +27,39 @@ SOFTWARE.
 using ConsignmentShopLibrary.Data;
 using ConsignmentShopLibrary.Models;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
-namespace ConsignmentShopLibrary
+namespace ConsignmentShopLibrary.Services
 {
-    public static class VendorHelper
+    public class VendorService : IVendorService
     {
-        public async static Task PayVendor(VendorModel vendor)
+        private readonly IVendorData _vendorData;
+        private readonly IItemData _itemData;
+        private readonly IStoreData _storeData;
+        private readonly IConfig _config;
+
+        public VendorService(IVendorData vendorData,
+            IItemData itemData,
+            IStoreData storeData,
+            IConfig config)
+        {
+            _vendorData = vendorData;
+            _itemData = itemData;
+            _storeData = storeData;
+            _config = config;
+        }
+
+        public async Task PayVendor(VendorModel vendor)
         {
             if (vendor == null)
             {
                 throw new ArgumentNullException(nameof(vendor), "Vendor cannot be null.");
             }
 
-            IVendorData vendorData = new VendorData(GlobalConfig.Connection);
-            IItemData itemData = new ItemData(GlobalConfig.Connection);
-            IStoreData storeData = new StoreData(GlobalConfig.Connection);
+            string storeName = _config.Configuration.GetSection("Store:Name").Value;
+            StoreModel store = await _storeData.LoadStore(storeName);
 
-            string storeName = GlobalConfig.Configuration.GetSection("Store:Name").Value;
-            StoreModel store = await storeData.LoadStore(storeName);
-
-            var itemsOwnedByVendor = await itemData.LoadSoldItemsByVendor(vendor);
+            var itemsOwnedByVendor = await _itemData.LoadSoldItemsByVendor(vendor);
 
             foreach (ItemModel item in itemsOwnedByVendor)
             {
@@ -75,24 +86,21 @@ namespace ConsignmentShopLibrary
                     }
                 }
 
-                await itemData.UpdateItem(item);
-                await vendorData.UpdateVendor(vendor);
+                await _itemData.UpdateItem(item);
+                await _vendorData.UpdateVendor(vendor);
             }
 
-            storeData.UpdateStore(store);
+            _storeData.UpdateStore(store);
         }
 
-        public static async Task RemoveVendor(VendorModel vendor)
+        public async Task RemoveVendor(VendorModel vendor)
         {
-            IVendorData vendorData = new VendorData(GlobalConfig.Connection);
-            IItemData itemData = new ItemData(GlobalConfig.Connection);
-
             if (vendor == null)
             {
                 throw new ArgumentNullException(nameof(vendor), "Vendor cannot be null.");
             }
 
-            var items = await itemData.LoadItemsByVendor(vendor);
+            var items = await _itemData.LoadItemsByVendor(vendor);
 
             // Can't delete vendor if they still have items in the store
             if (items.Count != 0)
@@ -106,7 +114,7 @@ namespace ConsignmentShopLibrary
                 throw new InvalidOperationException($"{vendor.FullName} cannot be deleted until being payed {vendor.PaymentDue:C2}");
             }
 
-            await vendorData.RemoveVendor(vendor);
+            await _vendorData.RemoveVendor(vendor);
         }
     }
 }

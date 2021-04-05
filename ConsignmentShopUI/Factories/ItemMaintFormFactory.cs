@@ -1,7 +1,7 @@
 ﻿/*
 MIT License
 
-Copyright(c) 2020 Kyle Givler
+Copyright(c) 2021 Kyle Givler
 https://github.com/JoyfulReaper
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,19 +23,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using ConsignmentShopLibrary.Data;
+using System.Windows.Forms;
 
-namespace ConsignmentShopLibrary.DataAccess
+namespace ConsignmentShopUI.Factories
 {
-    public interface IDataAccess
+    public class ItemMaintFormFactory : IFormsFactory
     {
-        Task<List<T>> LoadData<T, U>(string storedProcedure, U parameters);
+        private readonly IVendorData _vendorData;
+        private readonly IItemData _itemData;
 
-        Task<int> SaveData<T>(string storedProcedure, T parameters);
+        public ItemMaintFormFactory(IVendorData vendorData,
+            IItemData itemData)
+        {
+            _vendorData = vendorData;
+            _itemData = itemData;
+        }
 
-        Task<List<T>> QueryRawSQL<T, U>(string sql, U parameters);
-
-        Task<int> ExecuteRawSQL<T>(string sql, T parameters);
+        public Form CreateForm()
+        {
+            return new ItemMaintFrm(_vendorData, _itemData);
+        }
     }
 }

@@ -30,15 +30,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
-namespace ConsignmentShopLibrary.Data
+namespace ConsignmentShopLibrary.Data.MSSQL
 {
     public class VendorData : IVendorData
     {
-        private readonly IDataAccess dataAccess;
+        private readonly IDataAccess _dataAccess;
 
         public VendorData(IDataAccess dataAccess)
         {
-            this.dataAccess = dataAccess;
+            _dataAccess = dataAccess;
         }
 
         public async Task<int> CreateVendor(VendorModel vendor)
@@ -51,14 +51,14 @@ namespace ConsignmentShopLibrary.Data
             p.Add("PaymentDue", vendor.PaymentDue);
             p.Add("Id", 0, DbType.Int32, direction: ParameterDirection.Output);
 
-            await dataAccess.SaveData("dbo.spVendors_Insert", p);
+            await _dataAccess.SaveData("dbo.spVendors_Insert", p);
 
             return p.Get<int>("Id");
         }
 
         public Task<int> UpdateVendor(VendorModel vendor)
         {
-            return dataAccess.SaveData("dbo.spVendors_Update", new
+            return _dataAccess.SaveData("dbo.spVendors_Update", new
             {
                 Id = vendor.Id,
                 FirstName = vendor.FirstName,
@@ -70,12 +70,12 @@ namespace ConsignmentShopLibrary.Data
 
         public Task<List<VendorModel>> LoadAllVendors()
         {
-            return dataAccess.LoadData<VendorModel, dynamic>("dbo.spVendors_GetAll", new { });
+            return _dataAccess.LoadData<VendorModel, dynamic>("dbo.spVendors_GetAll", new { });
         }
 
         public Task<int> RemoveVendor(VendorModel vendor)
         {
-            return dataAccess.SaveData("dbo.spVendors_Delete", new { Id = vendor.Id });
+            return _dataAccess.SaveData("dbo.spVendors_Delete", new { Id = vendor.Id });
         }
     }
 }

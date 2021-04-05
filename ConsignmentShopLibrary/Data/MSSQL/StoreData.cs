@@ -31,20 +31,20 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ConsignmentShopLibrary.Data
+namespace ConsignmentShopLibrary.Data.MSSQL
 {
     public class StoreData : IStoreData
     {
-        private readonly IDataAccess dataAccess;
+        private readonly IDataAccess _dataAccess;
 
         public StoreData(IDataAccess dataAccess)
         {
-            this.dataAccess = dataAccess;
+            _dataAccess = dataAccess;
         }
 
         public async Task<StoreModel> LoadStore(string name)
         {
-            var rows = await dataAccess.LoadData<StoreModel, dynamic>("dbo.SpStores_Get", new { Name = name });
+            var rows = await _dataAccess.LoadData<StoreModel, dynamic>("dbo.SpStores_Get", new { Name = name });
 
             if (!rows.Any())
             {
@@ -66,7 +66,7 @@ namespace ConsignmentShopLibrary.Data
         public async Task<int> CreateStore(StoreModel store)
         {
             string sql = "select count(id) from Stores where name = @Name";
-            var resList = await dataAccess.QueryRawSQL<int, dynamic>(sql, new { Name = store.Name });
+            var resList = await _dataAccess.QueryRawSQL<int, dynamic>(sql, new { Name = store.Name });
             int res = resList.First();
 
             if(res != 0)
@@ -82,14 +82,14 @@ namespace ConsignmentShopLibrary.Data
             p.Add("Id", DbType.Int32, direction: ParameterDirection.Output);
 
             // we do something with Id so we have to await
-            await dataAccess.SaveData("dbo.spStores_Insert", p);
+            await _dataAccess.SaveData("dbo.spStores_Insert", p);
 
             return p.Get<int>("Id");
         }
 
         public Task<int> UpdateStore(StoreModel store)
         {
-            return dataAccess.SaveData("dbo.spStores_Update", new
+            return _dataAccess.SaveData("dbo.spStores_Update", new
             {
                 Id = store.Id,
                 Name = store.Name,

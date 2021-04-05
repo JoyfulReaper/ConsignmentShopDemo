@@ -23,9 +23,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using ConsignmentShopLibrary;
 using ConsignmentShopLibrary.Data;
 using ConsignmentShopLibrary.Models;
+using ConsignmentShopLibrary.Services;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -36,37 +36,41 @@ namespace ConsignmentShopUI
 {
     public partial class VendorMaintFrm : Form
     {
-        private readonly BindingList<VendorModel> vendors = new BindingList<VendorModel>();
-        private bool editing = false;
-        private VendorModel editingVendor = null;
+        private readonly BindingList<VendorModel> _vendors = new BindingList<VendorModel>();
 
-        private readonly IVendorData vendorData = new VendorData(GlobalConfig.Connection);
+        private readonly IVendorData _vendorData;
+        private readonly IVendorService _vendorService;
+
+        private bool _editing = false;
+        private VendorModel _editingVendor = null;
 
 
-        public VendorMaintFrm()
+
+        public VendorMaintFrm(IVendorData vendorData,
+            IVendorService vendorService)
         {
             InitializeComponent();
-
-            UpdateVendors();
+            _vendorData = vendorData;
+            _vendorService = vendorService;
         }
 
         private async Task UpdateVendors()
         {
-            vendors.Clear();
+            _vendors.Clear();
 
-            var allVendors = await vendorData.LoadAllVendors();
+            var allVendors = await _vendorData.LoadAllVendors();
             allVendors = allVendors.OrderBy(x => x.LastName).ToList();
 
             foreach (var v in allVendors)
             {
-                vendors.Add(v);
+                _vendors.Add(v);
             }
 
-            listBoxVendors.DataSource = vendors;
+            listBoxVendors.DataSource = _vendors;
             listBoxVendors.DisplayMember = "Display";
             listBoxVendors.ValueMember = "Display";
 
-            vendors.ResetBindings();
+            _vendors.ResetBindings();
         }
 
         private async void btnAddVendor_Click(object sender, System.EventArgs e)
@@ -78,21 +82,21 @@ namespace ConsignmentShopUI
                 return;
             }
 
-            if (editing)
+            if (_editing)
             {
-                editingVendor.FirstName = textBoxFirstName.Text;
-                editingVendor.LastName = textBoxLastName.Text;
-                editingVendor.CommissionRate = double.Parse(textBoxCommison.Text) / 100;
+                _editingVendor.FirstName = textBoxFirstName.Text;
+                _editingVendor.LastName = textBoxLastName.Text;
+                _editingVendor.CommissionRate = double.Parse(textBoxCommison.Text) / 100;
 
                 btnAddVendor.Text = "Add Vendor";
                 btnEdit.Enabled = true;
-                editing = false;
+                _editing = false;
 
-                output = editingVendor;
+                output = _editingVendor;
 
                 textBoxCommison.Enabled = true;
 
-                vendorData.UpdateVendor(output);
+                _vendorData.UpdateVendor(output);
             }
             else
             {
@@ -103,7 +107,7 @@ namespace ConsignmentShopUI
                     CommissionRate = double.Parse(textBoxCommison.Text) / 100
                 };
 
-                await vendorData.CreateVendor(output);
+                await _vendorData.CreateVendor(output);
             }
 
             UpdateVendors();
@@ -178,7 +182,7 @@ namespace ConsignmentShopUI
 
             try
             {
-                await VendorHelper.RemoveVendor(selectedVendor);
+                await _vendorService.RemoveVendor(selectedVendor);
             }
             catch (InvalidOperationException ex)
             {
@@ -214,7 +218,7 @@ namespace ConsignmentShopUI
 
             try
             {
-                await VendorHelper.PayVendor(selectedVendor);
+                await _vendorService.PayVendor(selectedVendor);
             }
             catch (InvalidOperationException)
             {
@@ -227,19 +231,19 @@ namespace ConsignmentShopUI
         private void btnEdit_Click(object sender, System.EventArgs e)
         {
             VendorModel selectedVendor = (VendorModel)listBoxVendors.SelectedItem;
-            editingVendor = selectedVendor;
+            _editingVendor = selectedVendor;
 
             if (selectedVendor == null)
             {
                 return;
             }
 
-            if (editingVendor.PaymentDue > 0)
+            if (_editingVendor.PaymentDue > 0)
             {
                 textBoxCommison.Enabled = false;
             }
 
-            editing = true;
+            _editing = true;
 
             PopulateVendorTextBoxes();
 
@@ -247,6 +251,11 @@ namespace ConsignmentShopUI
 
             btnAddVendor.Text = "Update Vendor";
             btnEdit.Enabled = false;
+        }
+
+        private async void VendorMaintFrm_Load(object sender, EventArgs e)
+        {
+            await UpdateVendors();
         }
     }
 }
