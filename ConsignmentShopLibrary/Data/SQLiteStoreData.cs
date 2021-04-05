@@ -53,11 +53,12 @@ namespace ConsignmentShopLibrary.Data
             }
 
             StringBuilder sqlBuilder = new StringBuilder();
-            sqlBuilder.Append("insert into Stores ([Name], StoreBank, StoreProfit) ");
+            sqlBuilder.Append("insert into Stores ([Name], [StoreBank], [StoreProfit]) ");
             sqlBuilder.Append("values (@Name, @StoreBank, @StoreProfit);");
 
-            await _dataAccess.ExecuteRawSQL<dynamic>(sql, store);
-            var queryResult = await _dataAccess.QueryRawSQL<Int64, dynamic>("select last_insert_rowid;", new { });
+
+            await _dataAccess.ExecuteRawSQL<dynamic>(sqlBuilder.ToString(), store);
+            var queryResult = await _dataAccess.QueryRawSQL<Int64, dynamic>("select last_insert_rowid();", new { });
 
             store.Id = (int)queryResult.FirstOrDefault();
             return store.Id;
@@ -66,7 +67,7 @@ namespace ConsignmentShopLibrary.Data
         public async Task<StoreModel> LoadStore(string name)
         {
             string sql = "select [Id], [Name], [StoreBank], [StoreProfit] from Stores where [Name] = @Name;";
-            var queryResult = await _dataAccess.QueryRawSQL<StoreModel, dynamic>(sql, new { });
+            var queryResult = await _dataAccess.QueryRawSQL<StoreModel, dynamic>(sql, new { Name = name });
             
             if(!queryResult.Any())
             {

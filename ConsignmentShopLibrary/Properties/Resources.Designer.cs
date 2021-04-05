@@ -61,7 +61,24 @@ namespace ConsignmentShopLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to BEGIN TRANSACTION;
+        ///CREATE TABLE IF NOT EXISTS &quot;Items&quot; (
+        ///	&quot;Id&quot;	INTEGER NOT NULL,
+        ///	&quot;Name&quot;	NVARCHAR(200) NOT NULL,
+        ///	&quot;Description&quot;	NVARCHAR(2000),
+        ///	&quot;Price&quot;	MONEY NOT NULL,
+        ///	&quot;Sold&quot;	BIT NOT NULL,
+        ///	&quot;OwnerId&quot;	INT NOT NULL,
+        ///	&quot;PaymentDistributed&quot;	BIT NOT NULL,
+        ///	PRIMARY KEY(&quot;Id&quot; AUTOINCREMENT),
+        ///	FOREIGN KEY(&quot;OwnerId&quot;) REFERENCES &quot;Vendors&quot;(&quot;Id&quot;)
+        ///);
+        ///CREATE TABLE IF NOT EXISTS &quot;Stores&quot; (
+        ///	&quot;Id&quot;	INTEGER NOT NULL,
+        ///	&quot;Name&quot;	TEXT NOT NULL,
+        ///	&quot;StoreBank&quot;	MONEY NOT NULL,
+        ///	&quot;StoreProfit&quot;	MONEY NOT NULL,
+        ///	PRIMARY KE [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateSQLiteDB {
             get {

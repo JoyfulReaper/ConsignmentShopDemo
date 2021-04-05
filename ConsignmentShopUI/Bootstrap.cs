@@ -42,7 +42,7 @@ namespace ConsignmentShopUI
             config.Initiliaze();
             var db = config.DBType;
 
-            if(db == DatabaseType.MSSQL)
+            if (db == DatabaseType.MSSQL)
             {
                 container
                     .AddSingleton<IDataAccess, SqlDb>()

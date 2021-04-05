@@ -95,15 +95,12 @@ namespace ConsignmentShopLibrary
 
         public async Task RemoveVendor(VendorModel vendor)
         {
-            IVendorData vendorData = new VendorData(_config.Connection);
-            IItemData itemData = new ItemData(_config.Connection);
-
             if (vendor == null)
             {
                 throw new ArgumentNullException(nameof(vendor), "Vendor cannot be null.");
             }
 
-            var items = await itemData.LoadItemsByVendor(vendor);
+            var items = await _itemData.LoadItemsByVendor(vendor);
 
             // Can't delete vendor if they still have items in the store
             if (items.Count != 0)
@@ -117,7 +114,7 @@ namespace ConsignmentShopLibrary
                 throw new InvalidOperationException($"{vendor.FullName} cannot be deleted until being payed {vendor.PaymentDue:C2}");
             }
 
-            await vendorData.RemoveVendor(vendor);
+            await _vendorData.RemoveVendor(vendor);
         }
     }
 }

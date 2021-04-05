@@ -30,7 +30,6 @@ SOFTWARE.
 
 using System;
 using System.Windows.Forms;
-using ConsignmentShopLibrary.DataAccess;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ConsignmentShopUI

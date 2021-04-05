@@ -24,7 +24,7 @@ namespace ConsignmentShopLibrary.Data
             sql.Append("values (@FirstName, @LastName, @CommissionRate, @PaymentDue);");
 
             await _dataAccess.ExecuteRawSQL<dynamic>(sql.ToString(), vendor);
-            var queryResult = await _dataAccess.QueryRawSQL<Int64, dynamic>("select last_insert_rowid;", new { });
+            var queryResult = await _dataAccess.QueryRawSQL<Int64, dynamic>("select last_insert_rowid();", new { });
 
             vendor.Id = (int)queryResult.FirstOrDefault();
             return vendor.Id;

@@ -45,11 +45,11 @@ namespace ConsignmentShopLibrary.Data
         public async Task<int> CreateItem(ItemModel item)
         {
             StringBuilder sql = new StringBuilder();
-            sql.Append("insert into Items ((Name, Description, Price, Sold, OwnerId, PaymentDistributed) ");
+            sql.Append("insert into Items (Name, Description, Price, Sold, OwnerId, PaymentDistributed) ");
             sql.Append("values (@Name, @Description, @Price, @Sold, @OwnerId, @PaymentDistributed);");
 
             var sqlResult = await _dataAccess.ExecuteRawSQL<dynamic>(sql.ToString(), item);
-            var queryResult = await _dataAccess.QueryRawSQL<Int64, dynamic>("select last_insert_rowid;", new { });
+            var queryResult = await _dataAccess.QueryRawSQL<Int64, dynamic>("select last_insert_rowid();", new { });
 
             item.Id = (int)queryResult.FirstOrDefault();
 
@@ -72,7 +72,7 @@ namespace ConsignmentShopLibrary.Data
             sql.Append("select [Id], [Name], [Description], [Price], [Sold], [OwnerId], [PaymentDistributed] ");
             sql.Append("from Items where OwnerId = @OwnerId;");
 
-            var sqlResult = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql.ToString(), vendor);
+            var sqlResult = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql.ToString(), new { OwnerId = vendor.Id });
             sqlResult.ForEach(x => x.Owner = vendor);
 
             return sqlResult;
@@ -107,7 +107,7 @@ namespace ConsignmentShopLibrary.Data
         {
             StringBuilder sql = new StringBuilder();
             sql.Append("select [Id], [Name], [Description], [Price], [Sold], [OwnerId], [PaymentDistributed] ");
-            sql.Append("from Items where sole = 0");
+            sql.Append("from Items where Sold = 0");
 
             var sqlResult = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql.ToString(), new { });
 

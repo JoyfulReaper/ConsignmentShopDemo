@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using Dapper;
 using System.Data.Common;
 using System.IO;
+using ConsignmentShopLibrary.Properties;
 
 namespace ConsignmentShopLibrary.DataAccess
 {
@@ -42,6 +43,12 @@ namespace ConsignmentShopLibrary.DataAccess
         public SQLiteDB(IConfig config)
         {
             _config = config;
+
+            SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
+            SqlMapper.AddTypeHandler(new GuidHandler());
+            SqlMapper.AddTypeHandler(new TimeSpanHandler());
+
+            CreateDatabaseIfNotExists();
         }
 
         public async Task<int> ExecuteRawSQL<T, U>(string sql, U parameters)

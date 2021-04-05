@@ -48,15 +48,15 @@ namespace ConsignmentShopLibrary
             // Set database type
             if (databaseSetting == "MSSQL")
             {
+                DBType = DatabaseType.MSSQL;
                 SqlDb sql = new SqlDb(this);
                 Connection = sql;
-                DBType = DatabaseType.MSSQL;
             }
             else if (databaseSetting == "SQLite")
             {
+                DBType = DatabaseType.SQLite;
                 SQLiteDB sql = new SQLiteDB(this);
                 Connection = sql;
-                DBType = DatabaseType.SQLite;
             }
             else
             {
