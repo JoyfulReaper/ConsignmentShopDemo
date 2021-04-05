@@ -1,7 +1,7 @@
 ﻿/*
 MIT License
 
-Copyright(c) 2020 Kyle Givler
+Copyright(c) 2021 Kyle Givler
 https://github.com/JoyfulReaper
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,31 +23,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// This Program/Demo based on this video: https://www.youtube.com/watch?v=YxewTI4H2mY
-// Very much extended from the video
-
-// TODO ASP.net frontend / other UIs
-
-using System;
 using System.Windows.Forms;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace ConsignmentShopUI
+namespace ConsignmentShopUI.Factories
 {
-    static class Program
+    public interface IFormsFactory
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            var serviceProvider = Bootstrap.Initialize();
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            Application.Run(serviceProvider.GetRequiredService<ConsignmentShop>());
-        }
+        Form CreateForm();
     }
 }

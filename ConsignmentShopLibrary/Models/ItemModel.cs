@@ -23,40 +23,56 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace ConsignmentShopLibrary.Models
 {
-    public class Vendor
+    public class ItemModel
     {
+        /// <summary>
+        /// Item's database row Id
+        /// </summary>
         public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public double CommisonRate { get; set; }
-        public decimal PaymentDue { get; set; }
+
+        /// <summary>
+        /// The name of the item
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The Description of the item
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// The price of the item
+        /// </summary>
+        public decimal Price { get; set; }
+
+        /// <summary>
+        /// Flag for if the item has been sold
+        /// </summary>
+        public bool Sold { get; set; }
+
+        /// <summary>
+        /// Flag for if the vendor had been paid for this item
+        /// </summary>
+        public bool PaymentDistributed { get; set; }
+
+        /// <summary>
+        /// The Id of the owner of this item
+        /// </summary>
+        public int OwnerId { get; set; }
+
+        /// <summary>
+        /// The owner of this item
+        /// </summary>
+        public VendorModel Owner { get; set; }
+
+        /// <summary>
+        /// The display name of this item
+        /// </summary>
         public string Display
         {
-            get
-            {
-                return string.Format("{0} {1} - {2:C2}", FirstName, LastName, PaymentDue);
-            }
-        }
-
-        public string FullName
-        {
-            get
-            {
-                return $"{FirstName} {LastName}";
-            }
-        }
-
-        public Vendor()
-        {
-            CommisonRate = .5;
+            get => $"{ Name } - {Price:C2}";
         }
     }
 }

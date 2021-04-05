@@ -23,31 +23,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// This Program/Demo based on this video: https://www.youtube.com/watch?v=YxewTI4H2mY
-// Very much extended from the video
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-// TODO ASP.net frontend / other UIs
-
-using System;
-using System.Windows.Forms;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace ConsignmentShopUI
+namespace ConsignmentShopLibrary.DataAccess
 {
-    static class Program
+    public interface IDataAccess
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            var serviceProvider = Bootstrap.Initialize();
+        Task<List<T>> LoadData<T, U>(string storedProcedure, U parameters);
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+        Task<int> SaveData<T>(string storedProcedure, T parameters);
 
-            Application.Run(serviceProvider.GetRequiredService<ConsignmentShop>());
-        }
+        Task<List<T>> QueryRawSQL<T, U>(string sql, U parameters);
+
+        Task<int> ExecuteRawSQL<T>(string sql, T parameters);
     }
 }

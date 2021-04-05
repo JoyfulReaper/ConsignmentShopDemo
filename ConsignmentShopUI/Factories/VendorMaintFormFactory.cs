@@ -1,7 +1,7 @@
 ﻿/*
 MIT License
 
-Copyright(c) 2020 Kyle Givler
+Copyright(c) 2021 Kyle Givler
 https://github.com/JoyfulReaper
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,31 +23,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// This Program/Demo based on this video: https://www.youtube.com/watch?v=YxewTI4H2mY
-// Very much extended from the video
-
-// TODO ASP.net frontend / other UIs
-
-using System;
+using ConsignmentShopLibrary.Data;
+using ConsignmentShopLibrary.Services;
 using System.Windows.Forms;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace ConsignmentShopUI
+namespace ConsignmentShopUI.Factories
 {
-    static class Program
+    public class VendorMaintFormFactory : IFormsFactory
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
+        private readonly IVendorData _vendorData;
+        private readonly IVendorService _vendorService;
+
+        public VendorMaintFormFactory(IVendorData vendorData,
+            IVendorService vendorService)
         {
-            var serviceProvider = Bootstrap.Initialize();
+            _vendorData = vendorData;
+            _vendorService = vendorService;
+        }
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
-            Application.Run(serviceProvider.GetRequiredService<ConsignmentShop>());
+        public Form CreateForm()
+        {
+            return new VendorMaintFrm(_vendorData, _vendorService);
         }
     }
 }

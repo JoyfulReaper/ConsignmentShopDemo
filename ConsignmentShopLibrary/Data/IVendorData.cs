@@ -23,31 +23,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// This Program/Demo based on this video: https://www.youtube.com/watch?v=YxewTI4H2mY
-// Very much extended from the video
+using ConsignmentShopLibrary.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-// TODO ASP.net frontend / other UIs
-
-using System;
-using System.Windows.Forms;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace ConsignmentShopUI
+namespace ConsignmentShopLibrary.Data
 {
-    static class Program
+    public interface IVendorData
     {
         /// <summary>
-        /// The main entry point for the application.
+        /// Save vendor to database
         /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            var serviceProvider = Bootstrap.Initialize();
+        /// <param name="vendor">The vendor to save</param>
+        /// <returns>The id of the vendor</returns>
+        Task<int> CreateVendor(VendorModel vendor);
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+        /// <summary>
+        /// Load all vendors from the database
+        /// </summary>
+        /// <returns>A List of all vendors from the database</returns>
+        Task<List<VendorModel>> LoadAllVendors();
 
-            Application.Run(serviceProvider.GetRequiredService<ConsignmentShop>());
-        }
+        /// <summary>
+        /// Remove a vendor from the database
+        /// </summary>
+        /// <param name="vendor">The vendor to remove</param>
+        /// <returns>The number of rows affacted</returns>
+        Task<int> RemoveVendor(VendorModel vendor);
+
+        /// <summary>
+        /// Update vendor information in the database
+        /// </summary>
+        /// <param name="vendor">The vendor to update</param>
+        /// <returns>The number of rows affacted</returns>
+        Task<int> UpdateVendor(VendorModel vendor);
     }
 }

@@ -23,31 +23,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// This Program/Demo based on this video: https://www.youtube.com/watch?v=YxewTI4H2mY
-// Very much extended from the video
+using ConsignmentShopLibrary.Models;
+using System.Threading.Tasks;
 
-// TODO ASP.net frontend / other UIs
-
-using System;
-using System.Windows.Forms;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace ConsignmentShopUI
+namespace ConsignmentShopLibrary.Data
 {
-    static class Program
+    public interface IStoreData
     {
         /// <summary>
-        /// The main entry point for the application.
+        /// Save a store to the database
         /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            var serviceProvider = Bootstrap.Initialize();
+        /// <param name="store">The store to save</param>
+        /// <returns>The id of the store</returns>
+        Task<int> CreateStore(StoreModel store);
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+        /// <summary>
+        /// Load a store from the database
+        /// </summary>
+        /// <param name="name">The name of the store to load</param>
+        /// <returns></returns>
+        Task<StoreModel> LoadStore(string name);
 
-            Application.Run(serviceProvider.GetRequiredService<ConsignmentShop>());
-        }
+        /// <summary>
+        /// Update a store in the database
+        /// </summary>
+        /// <param name="store">The store to update</param>
+        /// <returns>The number of rows affected</returns>
+        Task<int> UpdateStore(StoreModel store);
     }
 }

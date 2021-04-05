@@ -23,14 +23,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.Collections.Generic;
 
-namespace ConsignmentShopLibrary.Models
+using ConsignmentShopLibrary.Models;
+using System.Threading.Tasks;
+
+namespace ConsignmentShopLibrary.Services
 {
-    public class Store
+    public interface IVendorService
     {
-        public string Name { get; set; }
-        public decimal StoreBank { get; set; }
-        public decimal StoreProfit { get; set; }
+        Task PayVendor(VendorModel vendor);
+        Task RemoveVendor(VendorModel vendor);
     }
 }

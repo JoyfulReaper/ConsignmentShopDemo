@@ -23,78 +23,91 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using System.ComponentModel;
-using System.Windows.Forms;
-using ConsignmentShopLibrary;
+using ConsignmentShopLibrary.Data;
 using ConsignmentShopLibrary.Models;
+using ConsignmentShopLibrary.Services;
+using System;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ConsignmentShopUI
 {
     public partial class VendorMaintFrm : Form
     {
-        private readonly BindingList<Vendor> vendors = new BindingList<Vendor>();
-        private bool editing = false;
-        private Vendor editingVendor = null;
-        private Store store;
+        private readonly BindingList<VendorModel> _vendors = new BindingList<VendorModel>();
 
-        public VendorMaintFrm(Store store)
+        private readonly IVendorData _vendorData;
+        private readonly IVendorService _vendorService;
+
+        private bool _editing = false;
+        private VendorModel _editingVendor = null;
+
+
+
+        public VendorMaintFrm(IVendorData vendorData,
+            IVendorService vendorService)
         {
             InitializeComponent();
-
-            this.store = store;
-
-            UpdateVendors();
+            _vendorData = vendorData;
+            _vendorService = vendorService;
         }
 
-        private void UpdateVendors()
+        private async Task UpdateVendors()
         {
-            vendors.Clear();
+            _vendors.Clear();
 
-            foreach (var v in GlobalConfig.Connection.LoadAllVendors())
+            var allVendors = await _vendorData.LoadAllVendors();
+            allVendors = allVendors.OrderBy(x => x.LastName).ToList();
+
+            foreach (var v in allVendors)
             {
-                vendors.Add(v);
+                _vendors.Add(v);
             }
 
-            listBoxVendors.DataSource = vendors;
+            listBoxVendors.DataSource = _vendors;
             listBoxVendors.DisplayMember = "Display";
             listBoxVendors.ValueMember = "Display";
 
-            vendors.ResetBindings();
+            _vendors.ResetBindings();
         }
 
-        private void btnAddVendor_Click(object sender, System.EventArgs e)
+        private async void btnAddVendor_Click(object sender, System.EventArgs e)
         {
-            Vendor output = null;
+            VendorModel output = null;
 
             if (!ValidateData())
             {
                 return;
             }
 
-            if (editing)
+            if (_editing)
             {
-                editingVendor.FirstName = textBoxFirstName.Text;
-                editingVendor.LastName = textBoxLastName.Text;
-                editingVendor.CommisonRate = double.Parse(textBoxCommison.Text) / 100;
-
-                GlobalConfig.Connection.UpdateVendor(editingVendor);
+                _editingVendor.FirstName = textBoxFirstName.Text;
+                _editingVendor.LastName = textBoxLastName.Text;
+                _editingVendor.CommissionRate = double.Parse(textBoxCommison.Text) / 100;
 
                 btnAddVendor.Text = "Add Vendor";
                 btnEdit.Enabled = true;
-                editing = false;
+                _editing = false;
 
-                output = editingVendor;
+                output = _editingVendor;
+
+                textBoxCommison.Enabled = true;
+
+                _vendorData.UpdateVendor(output);
             }
             else
             {
-                output = new Vendor()
+                output = new VendorModel()
                 {
                     FirstName = textBoxFirstName.Text,
                     LastName = textBoxLastName.Text,
-                    CommisonRate = double.Parse(textBoxCommison.Text) / 100
+                    CommissionRate = double.Parse(textBoxCommison.Text) / 100
                 };
 
-                GlobalConfig.Connection.SaveVendor(output);
+                await _vendorData.CreateVendor(output);
             }
 
             UpdateVendors();
@@ -148,44 +161,40 @@ namespace ConsignmentShopUI
             return valid;
         }
 
-        private void btnItemDelete_Click(object sender, System.EventArgs e)
+        private async void btnItemDelete_Click(object sender, System.EventArgs e)
         {
-            Vendor selectedVendor = (Vendor)listBoxVendors.SelectedItem;
+            VendorModel selectedVendor = (VendorModel)listBoxVendors.SelectedItem;
 
             if (selectedVendor == null)
             {
                 return;
             }
 
-            // Can't delete a vendor if we owe them money!
-            if (selectedVendor.PaymentDue > 0)
-            {
-                MessageBox.Show($"{selectedVendor.FullName} cannot be deleted until being payed {selectedVendor.PaymentDue:C2}",
-                    "Vendor must be paid",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-
-                return;
-            }
-
-            // Gonna delete them from the DB!
             var result = MessageBox.Show($"Delete vendor: {selectedVendor.FullName}?\nThis action cannot be undone!",
-                "Delete Vendor?",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning);
+                                        "Delete Vendor?",
+                                        MessageBoxButtons.YesNo,
+                                        MessageBoxIcon.Warning);
 
             if (result != DialogResult.Yes)
             {
                 return;
             }
 
-            GlobalConfig.Connection.RemoveVendor(selectedVendor);
+            try
+            {
+                await _vendorService.RemoveVendor(selectedVendor);
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
             UpdateVendors();
         }
 
         private void PopulateVendorTextBoxes()
         {
-            Vendor selectedVendor = (Vendor)listBoxVendors.SelectedItem;
+            VendorModel selectedVendor = (VendorModel)listBoxVendors.SelectedItem;
 
             if (selectedVendor == null)
             {
@@ -194,62 +203,47 @@ namespace ConsignmentShopUI
 
             textBoxFirstName.Text = selectedVendor.FirstName;
             textBoxLastName.Text = selectedVendor.LastName;
-            textBoxCommison.Text = (selectedVendor.CommisonRate * 100).ToString();
+            textBoxCommison.Text = (selectedVendor.CommissionRate * 100).ToString();
             textboxOwed.Text = $"{selectedVendor.PaymentDue:C2}";
         }
 
-        private void btnPayVendor_Click(object sender, System.EventArgs e)
+        private async void btnPayVendor_Click(object sender, System.EventArgs e)
         {
-            Vendor selectedVendor = (Vendor)listBoxVendors.SelectedItem;
+            VendorModel selectedVendor = (VendorModel)listBoxVendors.SelectedItem;
 
-            if(selectedVendor == null)
+            if (selectedVendor == null)
             {
                 return;
             }
 
-            var itemsOwnedByVendor = GlobalConfig.Connection.LoadSoldItemsByVendor(selectedVendor);
-
-            foreach(Item item in itemsOwnedByVendor)
+            try
             {
-                if(!item.PaymentDistributed)
-                {
-                    decimal amountOwed = (decimal)item.Owner.CommisonRate * item.Price;
-
-                    if (store.StoreBank > amountOwed)
-                    {
-                        store.StoreBank -= amountOwed;
-
-                        selectedVendor.PaymentDue -= amountOwed;
-
-                        item.PaymentDistributed = true;
-                    }
-                    else
-                    {
-                        MessageBox.Show("You can't afford to pay the vendor", "You have no money", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        break;
-                    }
-                }
-
-                GlobalConfig.Connection.UpdateItem(item);
-                GlobalConfig.Connection.UpdateVendor(selectedVendor);
+                await _vendorService.PayVendor(selectedVendor);
             }
-
-            GlobalConfig.Connection.UpdateStoreBank(store);
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("You can't afford to pay the vendor", "You have no money", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             UpdateVendors();
         }
 
         private void btnEdit_Click(object sender, System.EventArgs e)
         {
-            Vendor selectedVendor = (Vendor)listBoxVendors.SelectedItem;
-            editingVendor = selectedVendor;
+            VendorModel selectedVendor = (VendorModel)listBoxVendors.SelectedItem;
+            _editingVendor = selectedVendor;
 
-            if(selectedVendor == null)
+            if (selectedVendor == null)
             {
                 return;
             }
 
-            editing = true;
+            if (_editingVendor.PaymentDue > 0)
+            {
+                textBoxCommison.Enabled = false;
+            }
+
+            _editing = true;
 
             PopulateVendorTextBoxes();
 
@@ -257,6 +251,11 @@ namespace ConsignmentShopUI
 
             btnAddVendor.Text = "Update Vendor";
             btnEdit.Enabled = false;
+        }
+
+        private async void VendorMaintFrm_Load(object sender, EventArgs e)
+        {
+            await UpdateVendors();
         }
     }
 }

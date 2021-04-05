@@ -50,8 +50,22 @@ namespace ConsignmentShopUI
             this.radioButtonSold = new System.Windows.Forms.RadioButton();
             this.radioButtonAll = new System.Windows.Forms.RadioButton();
             this.radioButtonUnsold = new System.Windows.Forms.RadioButton();
+            this.lblSelectedVendor = new System.Windows.Forms.Label();
+            this.lblSelectedPrice = new System.Windows.Forms.Label();
+            this.lblSelectedDesc = new System.Windows.Forms.Label();
+            this.lblVendorValue = new System.Windows.Forms.Label();
+            this.lblPriceValue = new System.Windows.Forms.Label();
+            this.lblNameValue = new System.Windows.Forms.Label();
+            this.lblSelectedName = new System.Windows.Forms.Label();
+            this.groupBoxSelected = new System.Windows.Forms.GroupBox();
+            this.textBoxSelectedDesc = new System.Windows.Forms.TextBox();
+            this.lblVendorPaid = new System.Windows.Forms.Label();
+            this.lblVendorPaidValue = new System.Windows.Forms.Label();
+            this.lblSold = new System.Windows.Forms.Label();
+            this.lblSoldValue = new System.Windows.Forms.Label();
             this.groupBoxAddItem.SuspendLayout();
             this.groupBoxAllItems.SuspendLayout();
+            this.groupBoxSelected.SuspendLayout();
             this.SuspendLayout();
             // 
             // headerText
@@ -87,6 +101,7 @@ namespace ConsignmentShopUI
             this.allItemsListBox.Name = "allItemsListBox";
             this.allItemsListBox.Size = new System.Drawing.Size(329, 224);
             this.allItemsListBox.TabIndex = 6;
+            this.allItemsListBox.SelectedIndexChanged += new System.EventHandler(this.allItemsListBox_SelectedIndexChanged);
             // 
             // lblAllItems
             // 
@@ -186,7 +201,6 @@ namespace ConsignmentShopUI
             // checkBoxVendorPaid
             // 
             this.checkBoxVendorPaid.AutoSize = true;
-            this.checkBoxVendorPaid.Enabled = false;
             this.checkBoxVendorPaid.Location = new System.Drawing.Point(300, 148);
             this.checkBoxVendorPaid.Name = "checkBoxVendorPaid";
             this.checkBoxVendorPaid.Size = new System.Drawing.Size(115, 24);
@@ -296,13 +310,165 @@ namespace ConsignmentShopUI
             this.radioButtonUnsold.UseVisualStyleBackColor = true;
             this.radioButtonUnsold.CheckedChanged += new System.EventHandler(this.radioButtonOption_CheckedChanged);
             // 
+            // lblSelectedVendor
+            // 
+            this.lblSelectedVendor.AutoSize = true;
+            this.lblSelectedVendor.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblSelectedVendor.ForeColor = System.Drawing.Color.RoyalBlue;
+            this.lblSelectedVendor.Location = new System.Drawing.Point(12, 178);
+            this.lblSelectedVendor.Name = "lblSelectedVendor";
+            this.lblSelectedVendor.Size = new System.Drawing.Size(72, 20);
+            this.lblSelectedVendor.TabIndex = 13;
+            this.lblSelectedVendor.Text = "Vendor:";
+            // 
+            // lblSelectedPrice
+            // 
+            this.lblSelectedPrice.AutoSize = true;
+            this.lblSelectedPrice.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblSelectedPrice.ForeColor = System.Drawing.Color.RoyalBlue;
+            this.lblSelectedPrice.Location = new System.Drawing.Point(12, 146);
+            this.lblSelectedPrice.Name = "lblSelectedPrice";
+            this.lblSelectedPrice.Size = new System.Drawing.Size(59, 20);
+            this.lblSelectedPrice.TabIndex = 14;
+            this.lblSelectedPrice.Text = "Price: ";
+            // 
+            // lblSelectedDesc
+            // 
+            this.lblSelectedDesc.AutoSize = true;
+            this.lblSelectedDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblSelectedDesc.ForeColor = System.Drawing.Color.RoyalBlue;
+            this.lblSelectedDesc.Location = new System.Drawing.Point(11, 63);
+            this.lblSelectedDesc.Name = "lblSelectedDesc";
+            this.lblSelectedDesc.Size = new System.Drawing.Size(105, 20);
+            this.lblSelectedDesc.TabIndex = 15;
+            this.lblSelectedDesc.Text = "Description:";
+            // 
+            // lblVendorValue
+            // 
+            this.lblVendorValue.AutoSize = true;
+            this.lblVendorValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblVendorValue.ForeColor = System.Drawing.Color.DeepSkyBlue;
+            this.lblVendorValue.Location = new System.Drawing.Point(90, 178);
+            this.lblVendorValue.Name = "lblVendorValue";
+            this.lblVendorValue.Size = new System.Drawing.Size(75, 20);
+            this.lblVendorValue.TabIndex = 16;
+            this.lblVendorValue.Text = "{vendor}";
+            // 
+            // lblPriceValue
+            // 
+            this.lblPriceValue.AutoSize = true;
+            this.lblPriceValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblPriceValue.ForeColor = System.Drawing.Color.DeepSkyBlue;
+            this.lblPriceValue.Location = new System.Drawing.Point(90, 146);
+            this.lblPriceValue.Name = "lblPriceValue";
+            this.lblPriceValue.Size = new System.Drawing.Size(60, 20);
+            this.lblPriceValue.TabIndex = 17;
+            this.lblPriceValue.Text = "{price}";
+            // 
+            // lblNameValue
+            // 
+            this.lblNameValue.AutoSize = true;
+            this.lblNameValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblNameValue.ForeColor = System.Drawing.Color.DeepSkyBlue;
+            this.lblNameValue.Location = new System.Drawing.Point(90, 31);
+            this.lblNameValue.Name = "lblNameValue";
+            this.lblNameValue.Size = new System.Drawing.Size(65, 20);
+            this.lblNameValue.TabIndex = 18;
+            this.lblNameValue.Text = "{name}";
+            // 
+            // lblSelectedName
+            // 
+            this.lblSelectedName.AutoSize = true;
+            this.lblSelectedName.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblSelectedName.ForeColor = System.Drawing.Color.RoyalBlue;
+            this.lblSelectedName.Location = new System.Drawing.Point(11, 31);
+            this.lblSelectedName.Name = "lblSelectedName";
+            this.lblSelectedName.Size = new System.Drawing.Size(60, 20);
+            this.lblSelectedName.TabIndex = 20;
+            this.lblSelectedName.Text = "Name:";
+            // 
+            // groupBoxSelected
+            // 
+            this.groupBoxSelected.Controls.Add(this.lblSold);
+            this.groupBoxSelected.Controls.Add(this.lblSoldValue);
+            this.groupBoxSelected.Controls.Add(this.lblVendorPaid);
+            this.groupBoxSelected.Controls.Add(this.lblVendorPaidValue);
+            this.groupBoxSelected.Controls.Add(this.textBoxSelectedDesc);
+            this.groupBoxSelected.Controls.Add(this.lblNameValue);
+            this.groupBoxSelected.Controls.Add(this.lblSelectedVendor);
+            this.groupBoxSelected.Controls.Add(this.lblSelectedName);
+            this.groupBoxSelected.Controls.Add(this.lblSelectedPrice);
+            this.groupBoxSelected.Controls.Add(this.lblSelectedDesc);
+            this.groupBoxSelected.Controls.Add(this.lblPriceValue);
+            this.groupBoxSelected.Controls.Add(this.lblVendorValue);
+            this.groupBoxSelected.Location = new System.Drawing.Point(818, 54);
+            this.groupBoxSelected.Name = "groupBoxSelected";
+            this.groupBoxSelected.Size = new System.Drawing.Size(331, 378);
+            this.groupBoxSelected.TabIndex = 21;
+            this.groupBoxSelected.TabStop = false;
+            this.groupBoxSelected.Text = "Selected Item:";
+            // 
+            // textBoxSelectedDesc
+            // 
+            this.textBoxSelectedDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.textBoxSelectedDesc.Location = new System.Drawing.Point(12, 86);
+            this.textBoxSelectedDesc.Multiline = true;
+            this.textBoxSelectedDesc.Name = "textBoxSelectedDesc";
+            this.textBoxSelectedDesc.Size = new System.Drawing.Size(233, 57);
+            this.textBoxSelectedDesc.TabIndex = 21;
+            // 
+            // lblVendorPaid
+            // 
+            this.lblVendorPaid.AutoSize = true;
+            this.lblVendorPaid.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblVendorPaid.ForeColor = System.Drawing.Color.RoyalBlue;
+            this.lblVendorPaid.Location = new System.Drawing.Point(12, 207);
+            this.lblVendorPaid.Name = "lblVendorPaid";
+            this.lblVendorPaid.Size = new System.Drawing.Size(112, 20);
+            this.lblVendorPaid.TabIndex = 22;
+            this.lblVendorPaid.Text = "Vendor Paid:";
+            // 
+            // lblVendorPaidValue
+            // 
+            this.lblVendorPaidValue.AutoSize = true;
+            this.lblVendorPaidValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblVendorPaidValue.ForeColor = System.Drawing.Color.DeepSkyBlue;
+            this.lblVendorPaidValue.Location = new System.Drawing.Point(130, 207);
+            this.lblVendorPaidValue.Name = "lblVendorPaidValue";
+            this.lblVendorPaidValue.Size = new System.Drawing.Size(114, 20);
+            this.lblVendorPaidValue.TabIndex = 23;
+            this.lblVendorPaidValue.Text = "{vendor paid}";
+            // 
+            // lblSold
+            // 
+            this.lblSold.AutoSize = true;
+            this.lblSold.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblSold.ForeColor = System.Drawing.Color.RoyalBlue;
+            this.lblSold.Location = new System.Drawing.Point(12, 236);
+            this.lblSold.Name = "lblSold";
+            this.lblSold.Size = new System.Drawing.Size(50, 20);
+            this.lblSold.TabIndex = 24;
+            this.lblSold.Text = "Sold:";
+            // 
+            // lblSoldValue
+            // 
+            this.lblSoldValue.AutoSize = true;
+            this.lblSoldValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lblSoldValue.ForeColor = System.Drawing.Color.DeepSkyBlue;
+            this.lblSoldValue.Location = new System.Drawing.Point(130, 236);
+            this.lblSoldValue.Name = "lblSoldValue";
+            this.lblSoldValue.Size = new System.Drawing.Size(54, 20);
+            this.lblSoldValue.TabIndex = 25;
+            this.lblSoldValue.Text = "{sold}";
+            // 
             // ItemMaintFrm
             // 
             this.AcceptButton = this.btnAddItem;
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FloralWhite;
-            this.ClientSize = new System.Drawing.Size(824, 444);
+            this.ClientSize = new System.Drawing.Size(1161, 444);
+            this.Controls.Add(this.groupBoxSelected);
             this.Controls.Add(this.groupBoxAllItems);
             this.Controls.Add(this.groupBoxAddItem);
             this.Controls.Add(this.headerText);
@@ -310,10 +476,13 @@ namespace ConsignmentShopUI
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "ItemMaintFrm";
             this.Text = "Item Maintance";
+            this.Load += new System.EventHandler(this.ItemMaintFrm_Load);
             this.groupBoxAddItem.ResumeLayout(false);
             this.groupBoxAddItem.PerformLayout();
             this.groupBoxAllItems.ResumeLayout(false);
             this.groupBoxAllItems.PerformLayout();
+            this.groupBoxSelected.ResumeLayout(false);
+            this.groupBoxSelected.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -342,5 +511,18 @@ namespace ConsignmentShopUI
         private System.Windows.Forms.RadioButton radioButtonUnsold;
         private System.Windows.Forms.Button btnDeleteSold;
         private System.Windows.Forms.CheckBox checkBoxVendorPaid;
+        private System.Windows.Forms.Label lblSelectedVendor;
+        private System.Windows.Forms.Label lblSelectedPrice;
+        private System.Windows.Forms.Label lblSelectedDesc;
+        private System.Windows.Forms.Label lblVendorValue;
+        private System.Windows.Forms.Label lblPriceValue;
+        private System.Windows.Forms.Label lblNameValue;
+        private System.Windows.Forms.Label lblSelectedName;
+        private System.Windows.Forms.GroupBox groupBoxSelected;
+        private System.Windows.Forms.TextBox textBoxSelectedDesc;
+        private System.Windows.Forms.Label lblSold;
+        private System.Windows.Forms.Label lblSoldValue;
+        private System.Windows.Forms.Label lblVendorPaid;
+        private System.Windows.Forms.Label lblVendorPaidValue;
     }
 }
