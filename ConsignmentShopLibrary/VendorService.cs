@@ -31,14 +31,14 @@ using System.Threading.Tasks;
 
 namespace ConsignmentShopLibrary
 {
-    public class SQLVendorService : IVendorService
+    public class VendorService : IVendorService
     {
         private readonly IVendorData _vendorData;
         private readonly IItemData _itemData;
         private readonly IStoreData _storeData;
         private readonly IConfig _config;
 
-        public SQLVendorService(IVendorData vendorData,
+        public VendorService(IVendorData vendorData,
             IItemData itemData,
             IStoreData storeData,
             IConfig config)

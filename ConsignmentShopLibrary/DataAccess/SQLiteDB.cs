@@ -1,7 +1,7 @@
 ﻿/*
 MIT License
 
-Copyright(c) 2020 Kyle Givler
+Copyright(c) 2021 Kyle Givler
 https://github.com/JoyfulReaper
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,58 +23,60 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
+using System.Data.SQLite;
 using System.Threading.Tasks;
+using Dapper;
 
 namespace ConsignmentShopLibrary.DataAccess
 {
-    public class SqlDb : IDataAccess
+    public class SQLiteDB : IDataAccess
     {
         private readonly IConfig _config;
 
-        public SqlDb(IConfig config)
+        public SQLiteDB(IConfig config)
         {
             _config = config;
         }
 
-        public async Task<List<T>> LoadData<T, U>(string storedProcedure, U parameters)
+        public async Task<int> ExecuteRawSQL<T, U>(string sql, U parameters)
         {
-            using (IDbConnection connection = new SqlConnection(_config.ConnectionString()))
+            using (IDbConnection connection = new SQLiteConnection(_config.ConnectionString()))
             {
-                var rows = await connection.QueryAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
-
-                return rows.ToList();
+                var res = await connection.ExecuteAsync(sql, parameters);
+                return res;
             }
         }
 
-        public async Task<int> SaveData<T>(string storedProcedure, T parameters)
+        public async Task<int> ExecuteRawSQL<T>(string sql, T parameters)
         {
-            using (IDbConnection connection = new SqlConnection(_config.ConnectionString()))
+            using (IDbConnection connection = new SQLiteConnection(_config.ConnectionString()))
             {
-                return await connection.ExecuteAsync(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
+                var res = await connection.ExecuteAsync(sql, parameters);
+                return res;
             }
+        }
+
+        public Task<List<T>> LoadData<T, U>(string storedProcedure, U parameters)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<List<T>> QueryRawSQL<T, U>(string sql, U parameters)
         {
-            using (IDbConnection connection = new SqlConnection(_config.ConnectionString()))
+            using (IDbConnection connection = new SQLiteConnection(_config.ConnectionString()))
             {
                 var res = await connection.QueryAsync<T>(sql, parameters);
                 return res.ToList();
             }
         }
 
-        public async Task<int> ExecuteRawSQL<T>(string sql, T parameters)
+        public Task<int> SaveData<T>(string storedProcedure, T parameters)
         {
-            using (IDbConnection connection = new SqlConnection(_config.ConnectionString()))
-            {
-                var res = await connection.ExecuteAsync(sql, parameters);
-                return res;
-            }
+            throw new NotImplementedException();
         }
     }
 }

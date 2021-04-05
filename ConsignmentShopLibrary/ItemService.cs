@@ -32,14 +32,14 @@ using System.Threading.Tasks;
 
 namespace ConsignmentShopLibrary
 {
-    public class SQLItemService : IItemService
+    public class ItemService : IItemService
     {
         private readonly IConfig _config;
         private readonly IVendorData _vendorData;
         private readonly IStoreData _storeData;
         private readonly IItemData _itemData;
 
-        public SQLItemService(IConfig config,
+        public ItemService(IConfig config,
             IVendorData vendorData,
             IStoreData storeData,
             IItemData itemData)

@@ -48,18 +48,28 @@ namespace ConsignmentShopUI
                     .AddSingleton<IItemData, ItemData>()
                     .AddSingleton<IStoreData, StoreData>()
                     .AddSingleton<IVendorData, VendorData>()
-                    .AddSingleton<IItemService, SQLItemService>()
-                    .AddSingleton<IVendorService, SQLVendorService>()
-                    .AddSingleton<IServiceCollection>(_ => container)
-                    .AddSingleton<ItemMaintFormFactory>()
-                    .AddSingleton<VendorMaintFormFactory>();
+                    .AddSingleton<IItemService, ItemService>()
+                    .AddSingleton<IVendorService, VendorService>();
+            }
+            else if (db == DatabaseType.SQLite)
+            {
+                container
+                    .AddSingleton<IDataAccess, SQLiteDB>()
+                    .AddSingleton<IItemData, SQLiteItemData>()
+                    .AddSingleton<IStoreData, SQLiteStoreData>()
+                    .AddSingleton<IVendorData, SQLiteVendorData>()
+                    .AddSingleton<IItemService, ItemService>()
+                    .AddSingleton<IVendorService, VendorService>();
             }
 
             container
                 .AddSingleton(_ => config)
                 .AddTransient<ConsignmentShop>()
                 .AddTransient<ItemMaintFrm>()
-                .AddTransient<VendorMaintFrm>();
+                .AddTransient<VendorMaintFrm>()
+                .AddSingleton<ItemMaintFormFactory>()
+                .AddSingleton<VendorMaintFormFactory>()
+                .AddSingleton<IServiceCollection>(_ => container);
 
             return container.BuildServiceProvider();
         }
