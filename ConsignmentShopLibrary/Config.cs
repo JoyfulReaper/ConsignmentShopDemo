@@ -70,6 +70,10 @@ namespace ConsignmentShopLibrary
             {
                 return Configuration.GetConnectionString("MSSQL");
             }
+            else if (DBType == DatabaseType.SQLite)
+            {
+                return Configuration.GetConnectionString("SQLite");
+            }
 
             throw new InvalidOperationException("DBType is not valid");
         }

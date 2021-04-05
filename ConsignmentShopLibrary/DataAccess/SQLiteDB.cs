@@ -30,6 +30,8 @@ using System.Linq;
 using System.Data.SQLite;
 using System.Threading.Tasks;
 using Dapper;
+using System.Data.Common;
+using System.IO;
 
 namespace ConsignmentShopLibrary.DataAccess
 {
@@ -77,6 +79,21 @@ namespace ConsignmentShopLibrary.DataAccess
         public Task<int> SaveData<T>(string storedProcedure, T parameters)
         {
             throw new NotImplementedException();
+        }
+
+        private void CreateDatabaseIfNotExists()
+        {
+            DbConnectionStringBuilder builder = new DbConnectionStringBuilder();
+            builder.ConnectionString = _config.ConnectionString();
+            builder.TryGetValue("Data Source", out object databaseFile);
+
+            if (!File.Exists(databaseFile.ToString()))
+            {
+                using (IDbConnection connection = new SQLiteConnection(_config.ConnectionString()))
+                {
+                    connection.Execute(Resources.CreateSQLiteDB);
+                }
+            }
         }
     }
 }

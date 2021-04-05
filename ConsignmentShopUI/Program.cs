@@ -43,7 +43,7 @@ namespace ConsignmentShopUI
         [STAThread]
         static void Main()
         {
-            var serviceProvider = Bootstrap.Initialize(DatabaseType.MSSQL);
+            var serviceProvider = Bootstrap.Initialize();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

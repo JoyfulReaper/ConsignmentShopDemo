@@ -34,12 +34,13 @@ namespace ConsignmentShopUI
 {
     internal static class Bootstrap
     {
-        public static IServiceProvider Initialize(DatabaseType db)
+        public static IServiceProvider Initialize()
         {
             var container = new ServiceCollection();
 
             IConfig config = new Config();
             config.Initiliaze();
+            var db = config.DBType;
 
             if(db == DatabaseType.MSSQL)
             {
