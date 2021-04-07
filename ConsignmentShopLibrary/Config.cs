@@ -42,11 +42,13 @@ namespace ConsignmentShopLibrary
 
         public Config()
         {
-            Configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
+            
         }
 
         public void Initiliaze()
         {
+            Configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
+
             var databaseSetting = Configuration.GetSection("DatabaseType").Value;
 
             // Set database type
@@ -72,6 +74,8 @@ namespace ConsignmentShopLibrary
 
         public void Initiliaze(DatabaseType dbType, string connectionString)
         {
+            Configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true).Build();
+
             ConnectionString = connectionString;
             DBType = dbType;
 
