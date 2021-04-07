@@ -9,7 +9,9 @@ namespace ConsignmentShopLibrary
         IDataAccess Connection { get; }
         DatabaseType DBType { get; }
 
-        string ConnectionString();
+        public string ConnectionString { get; }
         void Initiliaze();
+
+        public void Initiliaze(DatabaseType type, string connectionString);
     }
 }
