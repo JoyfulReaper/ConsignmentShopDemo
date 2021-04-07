@@ -66,7 +66,7 @@ namespace ConsignmentShopLibrary.Data.SQLite
             string sql = "select [Id], [FirstName], [LastName], [CommissionRate], [PaymentDue] from Vendors where Id = @Id;";
             var queryResult = await _dataAccess.QueryRawSQL<VendorModel, dynamic>(sql, new { Id = id });
 
-            return queryResult.First();
+            return queryResult.FirstOrDefault();
         }
 
         public Task<int> RemoveVendor(VendorModel vendor)

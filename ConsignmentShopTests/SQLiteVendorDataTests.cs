@@ -62,6 +62,72 @@ namespace ConsignmentShopTests
             Assert.Equal(0, dbVendor.PaymentDue);
         }
 
+        [Fact]
+        public async Task Test_LoadVendor()
+        {
+            var dbVendor = await _vendorData.LoadVendor(1);
+            Assert.NotNull(dbVendor);
+            Assert.Equal("Test", dbVendor.FirstName);
+            Assert.Equal("Vendor", dbVendor.LastName);
+            Assert.Equal(.5, dbVendor.CommissionRate);
+            Assert.Equal(0, dbVendor.PaymentDue);
+        }
+
+        [Fact]
+        public async Task Test_LoadAllVendors()
+        {
+            //TODO improve test
+            var allVendors = await _vendorData.LoadAllVendors();
+            Assert.NotNull(allVendors);
+            Assert.True(allVendors.Count > 0);
+        }
+
+        [Fact]
+        public async Task Test_UpdateVendor()
+        {
+            VendorModel vendor = new VendorModel()
+            {
+                FirstName = "Update",
+                LastName = "Test",
+                CommissionRate = .5,
+                PaymentDue = 0,
+            };
+
+            await _vendorData.CreateVendor(vendor);
+
+            vendor.LastName = "Vendor";
+            vendor.CommissionRate = .25;
+            vendor.PaymentDue = 10;
+
+            await _vendorData.UpdateVendor(vendor);
+            var dbVendor = await _vendorData.LoadVendor(vendor.Id);
+            Assert.NotNull(dbVendor);
+            Assert.Equal("Update", dbVendor.FirstName);
+            Assert.Equal("Vendor", dbVendor.LastName);
+            Assert.Equal(.25, dbVendor.CommissionRate);
+            Assert.Equal(10, dbVendor.PaymentDue);
+
+        }
+
+        [Fact]
+        public async Task Test_RemoveVendor()
+        {
+            VendorModel vendor = new VendorModel()
+            {
+                FirstName = "Delete",
+                LastName = "Me",
+                CommissionRate = .5,
+                PaymentDue = 100,
+            };
+
+            await _vendorData.CreateVendor(vendor);
+
+            await _vendorData.RemoveVendor(vendor);
+
+            var vendorDb = await _vendorData.LoadVendor(vendor.Id);
+            Assert.Null(vendorDb);
+        }
+
         protected override async void Seed()
         {
             VendorModel vendor = new VendorModel()
