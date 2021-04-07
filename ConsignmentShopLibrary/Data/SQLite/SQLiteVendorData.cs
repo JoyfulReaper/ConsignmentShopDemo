@@ -21,10 +21,10 @@ namespace ConsignmentShopLibrary.Data.SQLite
         {
             StringBuilder sql = new StringBuilder();
             sql.Append("insert into Vendors (FirstName, LastName, CommissionRate, PaymentDue) ");
-            sql.Append("values (@FirstName, @LastName, @CommissionRate, @PaymentDue);");
+            sql.Append("values (@FirstName, @LastName, @CommissionRate, @PaymentDue); ");
+            sql.Append("select last_insert_rowid();");
 
-            await _dataAccess.ExecuteRawSQL<dynamic>(sql.ToString(), vendor);
-            var queryResult = await _dataAccess.QueryRawSQL<Int64, dynamic>("select last_insert_rowid();", new { });
+            var queryResult = await _dataAccess.QueryRawSQL<Int64, dynamic>(sql.ToString(), vendor);
 
             vendor.Id = (int)queryResult.FirstOrDefault();
             return vendor.Id;
