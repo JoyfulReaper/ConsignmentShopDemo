@@ -38,6 +38,8 @@ namespace ConsignmentShopLibrary
         public IConfiguration Configuration { get; private set; }
         public DatabaseType DBType { get; private set; }
 
+        public string ConnectionString { get; private set; }
+
         public Config()
         {
             Configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
@@ -50,12 +52,14 @@ namespace ConsignmentShopLibrary
             // Set database type
             if (databaseSetting == "MSSQL")
             {
+                ConnectionString = Configuration.GetConnectionString("MSSQL");
                 DBType = DatabaseType.MSSQL;
                 SqlDb sql = new SqlDb(this);
                 Connection = sql;
             }
             else if (databaseSetting == "SQLite")
             {
+                ConnectionString = Configuration.GetConnectionString("SQLite");
                 DBType = DatabaseType.SQLite;
                 SQLiteDB sql = new SQLiteDB(this);
                 Connection = sql;
@@ -66,18 +70,23 @@ namespace ConsignmentShopLibrary
             }
         }
 
-        public string ConnectionString()
+        public void Initiliaze(DatabaseType dbType, string connectionString)
         {
-            if (DBType == DatabaseType.MSSQL)
-            {
-                return Configuration.GetConnectionString("MSSQL");
-            }
-            else if (DBType == DatabaseType.SQLite)
-            {
-                return Configuration.GetConnectionString("SQLite");
-            }
+            ConnectionString = connectionString;
+            DBType = dbType;
 
-            throw new InvalidOperationException("DBType is not valid");
+            switch (dbType)
+            {
+                case DatabaseType.MSSQL:
+                    Connection = new SqlDb(this);
+                    break;
+                case DatabaseType.SQLite:
+                    Connection = new SQLiteDB(this);
+                    break;
+                default:
+                    throw new InvalidOperationException("Default case hit :(");
+                    break;
+            }
         }
     }
 }
