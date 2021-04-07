@@ -33,6 +33,7 @@ namespace ConsignmentShopTests
     public class SQLiteItemDataTests : DBTest
     {
         private SQLiteItemData _itemData;
+        private VendorModel _vendor;
 
         public SQLiteItemDataTests() : base ("ItemTests.db")
         {
@@ -49,18 +50,38 @@ namespace ConsignmentShopTests
                 Price = 5.00m,
                 Sold = false,
                 PaymentDistributed = false,
-                OwnerId = 0,
-                Owner = null,
+                OwnerId = _vendor.Id,
+                Owner = _vendor,
             };
 
             var id = await _itemData.CreateItem(item);
             Assert.NotEqual(0, id);
             
-            //var dbItem = _itemData.LoadItem(id);
+            var dbItem = await _itemData.LoadItem(id);
+            Assert.NotNull(dbItem);
+
+            Assert.Equal("Create Item", dbItem.Name);
+            Assert.Equal("Create Description", dbItem.Description);
+            Assert.False(dbItem.PaymentDistributed);
+            Assert.Equal(_vendor.Id, dbItem.OwnerId);
         }
 
         protected override async void Seed()
         {
+            _vendor = new VendorModel()
+            {
+                FirstName = "test",
+                LastName = "vendor",
+                CommissionRate = 0,
+                PaymentDue = 0
+            };
+
+            StringBuilder sqlBuilder = new StringBuilder();
+            sqlBuilder.Append("insert into Vendors (FirstName, LastName, CommissionRate, PaymentDue) ");
+            sqlBuilder.Append("values (@FirstName, @LastName, @CommissionRate, @PaymentDue); ");
+
+            _vendor.Id = await _config.Connection.ExecuteRawSQL<dynamic>(sqlBuilder.ToString(), _vendor);
+
             var item = new ItemModel()
             {
                 Name = "Test Item",
@@ -68,8 +89,8 @@ namespace ConsignmentShopTests
                 Price = 1.00m,
                 Sold = false,
                 PaymentDistributed = false,
-                OwnerId = 0,
-                Owner = null,
+                OwnerId = _vendor.Id,
+                Owner = _vendor,
             };
 
             StringBuilder sql = new StringBuilder();
