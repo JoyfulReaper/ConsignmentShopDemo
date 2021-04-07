@@ -45,6 +45,12 @@ namespace ConsignmentShopLibrary.Data
         Task<List<VendorModel>> LoadAllVendors();
 
         /// <summary>
+        /// Load vendor from the database
+        /// </summary>
+        /// <returns>A vendors from the database</returns>
+        Task<VendorModel> LoadVendor(int id);
+
+        /// <summary>
         /// Remove a vendor from the database
         /// </summary>
         /// <param name="vendor">The vendor to remove</param>
