@@ -67,6 +67,35 @@ namespace ConsignmentShopTests
             Assert.Equal(50, dbStore.StoreProfit);
         }
 
+        [Fact]
+        public async Task Test_UpdateStore()
+        {
+            StoreModel store = new StoreModel()
+            {
+                Name = "Update Store Test",
+                StoreBank = 0,
+                StoreProfit = 0
+            };
+
+            await _storeData.CreateStore(store);
+
+            var dbStore = await _storeData.LoadStore(store.Name);
+            Assert.NotNull(dbStore);
+            Assert.Equal("Update Store Test", dbStore.Name);
+            Assert.Equal(0, dbStore.StoreBank);
+            Assert.Equal(0, dbStore.StoreProfit);
+
+            store.StoreBank = 500;
+            store.StoreProfit = 350;
+
+            await _storeData.UpdateStore(store);
+            dbStore = await _storeData.LoadStore(store.Name);
+            Assert.NotNull(dbStore);
+            Assert.Equal("Update Store Test", dbStore.Name);
+            Assert.Equal(500, dbStore.StoreBank);
+            Assert.Equal(350, dbStore.StoreProfit);
+        }
+
         protected override async void Seed()
         {
             StoreModel store = new StoreModel()
