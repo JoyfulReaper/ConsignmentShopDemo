@@ -46,14 +46,13 @@ namespace ConsignmentShopLibrary.Data.SQLite
         {
             StringBuilder sql = new StringBuilder();
             sql.Append("insert into Items (Name, Description, Price, Sold, OwnerId, PaymentDistributed) ");
-            sql.Append("values (@Name, @Description, @Price, @Sold, @OwnerId, @PaymentDistributed);");
+            sql.Append("values (@Name, @Description, @Price, @Sold, @OwnerId, @PaymentDistributed); ");
+            sql.Append("select last_insert_rowid();");
 
             item.OwnerId = item.Owner.Id;
 
-            var sqlResult = await _dataAccess.ExecuteRawSQL<dynamic>(sql.ToString(), item);
-            var queryResult = await _dataAccess.QueryRawSQL<Int64, dynamic>("select last_insert_rowid();", new { });
-
-            item.Id = (int)queryResult.FirstOrDefault();
+            var sqlResult = await _dataAccess.QueryRawSQL<Int64, dynamic>(sql.ToString(), item);
+            item.Id = (int)sqlResult.First();
 
             return item.Id;
         }
