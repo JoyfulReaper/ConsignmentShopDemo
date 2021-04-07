@@ -28,6 +28,7 @@ using ConsignmentShopLibrary.Models;
 using Dapper;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ConsignmentShopLibrary.Data.MSSQL
@@ -76,6 +77,14 @@ namespace ConsignmentShopLibrary.Data.MSSQL
         public Task<int> RemoveVendor(VendorModel vendor)
         {
             return _dataAccess.SaveData("dbo.spVendors_Delete", new { Id = vendor.Id });
+        }
+
+        public async Task<VendorModel> LoadVendor(int id)
+        {
+            string sql = "select [Id], [FirstName], [LastName], [CommissionRate], [PaymentDue] from Vendors where Id = @Id;";
+            var queryResult = await _dataAccess.QueryRawSQL<VendorModel, dynamic>(sql, new { });
+
+            return queryResult.First();
         }
     }
 }

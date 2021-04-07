@@ -38,6 +38,8 @@ namespace ConsignmentShopLibrary.Data
         /// <returns>The id of the item</returns>
         Task<int> CreateItem(ItemModel item);
 
+        Task<ItemModel> LoadItem(int id);
+
         /// <summary>
         /// Load all items from the database
         /// </summary>

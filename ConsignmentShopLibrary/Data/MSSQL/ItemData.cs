@@ -137,5 +137,15 @@ namespace ConsignmentShopLibrary.Data.MSSQL
                 item.Owner = owner.First();
             }
         }
+
+        public async Task<ItemModel> LoadItem(int id)
+        {
+            string sql = "select [Id], [Name], [Description], [Price], [Sold], [OwnerId], [PaymentDistributed] from Items where Id = @Id;";
+            var queryResult = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql, new { Id = id });
+
+            await AssignOwner(queryResult);
+
+            return queryResult.FirstOrDefault();
+        }
     }
 }
