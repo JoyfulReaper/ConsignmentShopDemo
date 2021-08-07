@@ -47,6 +47,10 @@ namespace ConsignmentShopLibrary.Data
 
         Task<List<StoreModel>> LoadAllStores();
 
+        Task<StoreModel> LoadStore(int id);
+
+        Task RemoveStore(int id);
+
         /// <summary>
         /// Update a store in the database
         /// </summary>

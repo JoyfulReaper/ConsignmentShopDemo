@@ -56,6 +56,8 @@ namespace ConsignmentShopMVC
                 .AddTransient<IItemService, ItemService>()
                 .AddTransient<IVendorService, VendorService>();
 
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+
             services.AddTransient<IEmailSender, EmailService>();
             services.Configure<MailSettings>(Configuration);
         }

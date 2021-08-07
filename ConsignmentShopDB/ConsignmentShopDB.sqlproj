@@ -81,6 +81,8 @@
     <Build Include="dbo\Stored Procedures\spStores_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spItems_GetByVendorId.sql" />
     <Build Include="dbo\Stored Procedures\spStores_GetAll.sql" />
+    <Build Include="dbo\Stored Procedures\spStores_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\spStores_Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="ConsignmentShopDB.refactorlog" />

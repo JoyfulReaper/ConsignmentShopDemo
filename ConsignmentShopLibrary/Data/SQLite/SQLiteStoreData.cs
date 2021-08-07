@@ -92,6 +92,20 @@ namespace ConsignmentShopLibrary.Data.SQLite
             return queryResult.First();
         }
 
+        public async Task<StoreModel> LoadStore(int id)
+        {
+            string sql = "select [Id], [Name], [StoreBank], [StoreProfit] from Stores where Id = @Id;";
+            var queryResult = await _dataAccess.QueryRawSQL<StoreModel, dynamic>(sql, new { });
+
+            return queryResult.FirstOrDefault();
+        }
+
+        public async Task RemoveStore(int id)
+        {
+            string sql = "delete from Stores where Id = @Id";
+            await _dataAccess.ExecuteRawSQL(sql, new { Id = id });
+        }
+
         public async Task<int> UpdateStore(StoreModel store)
         {
             StringBuilder sql = new StringBuilder();

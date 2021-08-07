@@ -1,4 +1,5 @@
 ﻿using ConsignmentShopLibrary.Data;
+using ConsignmentShopLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,79 +21,135 @@ namespace ConsignmentShopMVC.Controllers
 
         // GET: StoreController
         [Authorize]
-        public async Task<ActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             var stores = await _storeData.LoadAllStores();
             return View(stores);
         }
 
         // GET: StoreController/Details/5
-        public ActionResult Details(int id)
+        [Authorize]
+        public async Task<IActionResult> Details(int? id)
         {
-            return View();
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            var store = await _storeData.LoadStore((int)id);
+            if(store == null)
+            {
+                return NotFound();
+            }
+
+            return View(store);
         }
 
         // GET: StoreController/Create
-        public ActionResult Create()
+        [Authorize]
+        public IActionResult Create()
         {
             return View();
         }
 
         // POST: StoreController/Create
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult Create([Bind("Name")] StoreModel store)
         {
-            try
+            if(ModelState.IsValid)
             {
+                store.StoreProfit = 0;
+                store.StoreBank = 0;
+                _storeData.CreateStore(store);
+
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(store);
         }
 
         // GET: StoreController/Edit/5
-        public ActionResult Edit(int id)
+        [Authorize]
+        public async Task<IActionResult> Edit(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var store = await _storeData.LoadStore((int)id);
+            if (store == null)
+            {
+                return NotFound();
+            }
+
+            return View(store);
         }
 
         // POST: StoreController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        [Authorize]
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Name")] StoreModel store)
         {
-            try
+            if (id != store.Id)
             {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var dbStore = await _storeData.LoadStore(id);
+                if (dbStore == null)
+                {
+                    return NotFound();
+                }
+
+                dbStore.Name = store.Name;
+
+                await _storeData.UpdateStore(dbStore);
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(store);
         }
 
         // GET: StoreController/Delete/5
-        public ActionResult Delete(int id)
+        [Authorize]
+        public async Task<IActionResult> Delete(int? id)
         {
-            return View();
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            var store = await _storeData.LoadStore((int)id);
+
+            if(store == null)
+            {
+                return NotFound();
+            }
+
+            return View(store);
         }
 
         // POST: StoreController/Delete/5
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> Delete(int id)
         {
-            try
+            var store = await _storeData.LoadStore(id);
+            if(store == null)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch
-            {
-                return View();
-            }
+
+            await _storeData.RemoveStore(id);
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

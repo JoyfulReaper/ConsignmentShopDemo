@@ -2,7 +2,7 @@
 This project is based on Tim Corey's Consignment Shop Demo video:
 https://www.youtube.com/watch?v=YxewTI4H2mY
 
-This is one of my earlier projects and my abilities have increased since first creating this project. This project started with the Consignment Shop Demo project presented in the above Tim Corey Video and I gradually added new features.
+This is one of my earlier projects and my abilities have increased since first creating this project. This project started with the Consignment Shop Demo project presented in the above Tim Corey Video and I gradually added new features. Currently I am adding an ASP.NET MVC front end to this project.
 
 I am currently seeking employment as a developer.
 This project shows my ability to understand, work with, and implement the following:

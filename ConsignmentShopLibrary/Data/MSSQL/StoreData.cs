@@ -104,5 +104,17 @@ namespace ConsignmentShopLibrary.Data.MSSQL
             var allStores = await _dataAccess.LoadData<StoreModel, dynamic>("dbo.spStores_GetAll", new { });
             return allStores;
         }
+
+        public async Task<StoreModel> LoadStore(int id)
+        {
+            var rows = await _dataAccess.LoadData<StoreModel, dynamic>("dbo.SpStores_GetById", new { Id = id });
+
+            return rows.FirstOrDefault();
+        }
+
+        public async Task RemoveStore(int id)
+        {
+            await _dataAccess.LoadData<StoreModel, dynamic>("dbo.SpStores_Delete", new { Id = id });
+        }
     }
 }
