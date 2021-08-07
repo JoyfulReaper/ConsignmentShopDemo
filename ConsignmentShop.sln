@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsignmentShopLibrary", "C
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ConsignmentShopDB", "ConsignmentShopDB\ConsignmentShopDB.sqlproj", "{D5ADFD24-8BD0-4A22-A972-5914280AC7DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsignmentShopTests", "ConsignmentShopTests\ConsignmentShopTests.csproj", "{427C97CE-C6C0-4963-8A1E-7EEB694ED99A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsignmentShopTests", "ConsignmentShopTests\ConsignmentShopTests.csproj", "{427C97CE-C6C0-4963-8A1E-7EEB694ED99A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsignmentShopMVC", "ConsignmentShopMVC\ConsignmentShopMVC.csproj", "{AA210AAE-38C7-4111-B5A4-6F87A6837FB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{427C97CE-C6C0-4963-8A1E-7EEB694ED99A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{427C97CE-C6C0-4963-8A1E-7EEB694ED99A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{427C97CE-C6C0-4963-8A1E-7EEB694ED99A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA210AAE-38C7-4111-B5A4-6F87A6837FB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA210AAE-38C7-4111-B5A4-6F87A6837FB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA210AAE-38C7-4111-B5A4-6F87A6837FB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA210AAE-38C7-4111-B5A4-6F87A6837FB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

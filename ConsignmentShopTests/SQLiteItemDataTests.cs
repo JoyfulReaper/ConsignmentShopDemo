@@ -233,6 +233,7 @@ namespace ConsignmentShopTests
             sqlBuilder.Append("insert into Vendors (FirstName, LastName, CommissionRate, PaymentDue) ");
             sqlBuilder.Append("values (@FirstName, @LastName, @CommissionRate, @PaymentDue); ");
 
+            //TODO: Fix this
             _vendor.Id = await _config.Connection.ExecuteRawSQL<dynamic>(sqlBuilder.ToString(), _vendor);
 
             var item = new ItemModel()

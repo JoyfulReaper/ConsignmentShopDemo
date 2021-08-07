@@ -55,6 +55,12 @@ namespace ConsignmentShopLibrary
             if (databaseSetting == "MSSQL")
             {
                 ConnectionString = Configuration.GetConnectionString("MSSQL");
+
+                if(ConnectionString == null)
+                {
+                    ConnectionString = Configuration.GetConnectionString("DefaultConnection");
+                }
+
                 DBType = DatabaseType.MSSQL;
                 SqlDb sql = new SqlDb(this);
                 Connection = sql;
