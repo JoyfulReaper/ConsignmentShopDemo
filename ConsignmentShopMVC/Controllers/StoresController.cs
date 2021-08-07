@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace ConsignmentShopMVC.Controllers
 {
-    public class StoreController : Controller
+    public class StoresController : Controller
     {
         private readonly IStoreData _storeData;
 
-        public StoreController(IStoreData storeData)
+        public StoresController(IStoreData storeData)
         {
             _storeData = storeData;
         }
