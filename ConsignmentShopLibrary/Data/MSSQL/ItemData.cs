@@ -52,9 +52,11 @@ namespace ConsignmentShopLibrary.Data.MSSQL
             p.Add("Sold", item.Sold);
             p.Add("OwnerId", item.Owner.Id);
             p.Add("PaymentDistributed", item.PaymentDistributed);
+            p.Add("StoreId", item.StoreId);
             p.Add("Id", 0, DbType.Int32, direction: ParameterDirection.Output);
 
             await _dataAccess.SaveData("dbo.spItems_Insert", p);
+            item.Id = p.Get<int>("Id");
 
             return p.Get<int>("Id");
         }
@@ -73,27 +75,27 @@ namespace ConsignmentShopLibrary.Data.MSSQL
             });
         }
 
-        public async Task<List<ItemModel>> LoadAllItems()
+        public async Task<List<ItemModel>> LoadAllItems(int storeId)
         {
-            var allItems = await _dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetAll", new { });
+            var allItems = await _dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetAll", new { StoreId = storeId });
 
             await AssignOwner(allItems);
 
             return allItems;
         }
 
-        public async Task<List<ItemModel>> LoadUnsoldItems()
+        public async Task<List<ItemModel>> LoadUnsoldItems(int storeId)
         {
-            var unsoldItems = await _dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetUnsold", new { });
+            var unsoldItems = await _dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetUnsold", new { StoreId = storeId });
 
             await AssignOwner(unsoldItems);
 
             return unsoldItems;
         }
 
-        public async Task<List<ItemModel>> LoadSoldItems()
+        public async Task<List<ItemModel>> LoadSoldItems(int storeId)
         {
-            var soldItems = await _dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetSold", new { });
+            var soldItems = await _dataAccess.LoadData<ItemModel, dynamic>("dbo.spItems_GetSold", new { StoreId = storeId });
 
             await AssignOwner(soldItems);
 

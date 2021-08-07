@@ -3,14 +3,15 @@
 	@LastName varchar(150),
 	@CommissionRate float,
 	@PaymentDue money,
-	@Id int = 0 output
+	@Id int = 0 output,
+	@StoreId int
 AS
 begin
 
 	set nocount on;
 
-	insert into Vendors (FirstName, LastName, CommissionRate, PaymentDue)
-	values (@FirstName, @LastName, @CommissionRate, @PaymentDue);
+	insert into Vendors (FirstName, LastName, CommissionRate, PaymentDue, StoreId)
+	values (@FirstName, @LastName, @CommissionRate, @PaymentDue, @StoreId);
 
 	select @Id = SCOPE_IDENTITY();
 

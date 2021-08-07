@@ -51,6 +51,7 @@ namespace ConsignmentShopLibrary.Data.MSSQL
             p.Add("CommissionRate", vendor.CommissionRate);
             p.Add("PaymentDue", vendor.PaymentDue);
             p.Add("Id", 0, DbType.Int32, direction: ParameterDirection.Output);
+            p.Add("StoreId", vendor.StoreId);
 
             await _dataAccess.SaveData("dbo.spVendors_Insert", p);
 
@@ -69,9 +70,9 @@ namespace ConsignmentShopLibrary.Data.MSSQL
             });
         }
 
-        public Task<List<VendorModel>> LoadAllVendors()
+        public Task<List<VendorModel>> LoadAllVendors(int storeId)
         {
-            return _dataAccess.LoadData<VendorModel, dynamic>("dbo.spVendors_GetAll", new { });
+            return _dataAccess.LoadData<VendorModel, dynamic>("dbo.spVendors_GetAll", new { StoreId = storeId });
         }
 
         public Task<int> RemoveVendor(VendorModel vendor)

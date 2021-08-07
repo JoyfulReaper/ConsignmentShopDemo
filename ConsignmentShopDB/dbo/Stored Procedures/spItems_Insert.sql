@@ -5,14 +5,15 @@
 	@Sold bit,
 	@OwnerId int,
 	@PaymentDistributed bit,
-	@Id int = 0 output
+	@Id int = 0 output,
+	@StoreId int
 AS
 begin
 	
 	set nocount on;
 
-    insert into dbo.Items (Name, Description, Price, Sold, OwnerId, PaymentDistributed)
-	values (@Name, @Description, @Price, @Sold, @OwnerId, @PaymentDistributed);
+    insert into dbo.Items (Name, Description, Price, Sold, OwnerId, PaymentDistributed, StoreId)
+	values (@Name, @Description, @Price, @Sold, @OwnerId, @PaymentDistributed, @StoreId);
 
 	select @Id = SCOPE_IDENTITY();
 

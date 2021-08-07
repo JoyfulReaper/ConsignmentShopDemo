@@ -45,8 +45,8 @@ namespace ConsignmentShopLibrary.Data.SQLite
         public async Task<int> CreateVendor(VendorModel vendor)
         {
             StringBuilder sql = new StringBuilder();
-            sql.Append("insert into Vendors (FirstName, LastName, CommissionRate, PaymentDue) ");
-            sql.Append("values (@FirstName, @LastName, @CommissionRate, @PaymentDue); ");
+            sql.Append("insert into Vendors (FirstName, LastName, CommissionRate, PaymentDue, StoreId) ");
+            sql.Append("values (@FirstName, @LastName, @CommissionRate, @PaymentDue, @StoreId); ");
             sql.Append("select last_insert_rowid();");
 
             var queryResult = await _dataAccess.QueryRawSQL<Int64, dynamic>(sql.ToString(), vendor);
@@ -55,10 +55,11 @@ namespace ConsignmentShopLibrary.Data.SQLite
             return vendor.Id;
         }
 
-        public async Task<List<VendorModel>> LoadAllVendors()
+        public async Task<List<VendorModel>> LoadAllVendors(int storeId)
         {
-            string sql = "select [Id], [FirstName], [LastName], [CommissionRate], [PaymentDue] from Vendors;";
-            return await _dataAccess.QueryRawSQL<VendorModel, dynamic>(sql, new { });
+            string sql = "select [Id], [FirstName], [LastName], [CommissionRate], [PaymentDue] from Vendors " +
+                "where StoreId = @StoreId;";
+            return await _dataAccess.QueryRawSQL<VendorModel, dynamic>(sql, new { StoreId = storeId });
         }
 
         public async Task<VendorModel> LoadVendor(int id)

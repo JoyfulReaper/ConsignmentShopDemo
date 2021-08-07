@@ -45,8 +45,8 @@ namespace ConsignmentShopLibrary.Data.SQLite
         public async Task<int> CreateItem(ItemModel item)
         {
             StringBuilder sql = new StringBuilder();
-            sql.Append("insert into Items (Name, Description, Price, Sold, OwnerId, PaymentDistributed) ");
-            sql.Append("values (@Name, @Description, @Price, @Sold, @OwnerId, @PaymentDistributed); ");
+            sql.Append("insert into Items (Name, Description, Price, Sold, OwnerId, PaymentDistributed, StoreId) ");
+            sql.Append("values (@Name, @Description, @Price, @Sold, @OwnerId, @PaymentDistributed, @StoreId); ");
             sql.Append("select last_insert_rowid();");
 
             item.OwnerId = item.Owner.Id;
@@ -57,10 +57,11 @@ namespace ConsignmentShopLibrary.Data.SQLite
             return item.Id;
         }
 
-        public async Task<List<ItemModel>> LoadAllItems()
+        public async Task<List<ItemModel>> LoadAllItems(int storeId)
         {
-            string sql = "select [Id], [Name], [Description], [Price], [Sold], [OwnerId], [PaymentDistributed] from Items;";
-            var allItems = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql, new { });
+            string sql = "select [Id], [Name], [Description], [Price], [Sold], [OwnerId], [PaymentDistributed] from Items " +
+                "where StoreId = @StoreId;";
+            var allItems = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql, new { StoreId = storeId });
 
             await AssignOwner(allItems);
 
@@ -89,13 +90,13 @@ namespace ConsignmentShopLibrary.Data.SQLite
             return sqlResult;
         }
 
-        public async Task<List<ItemModel>> LoadSoldItems()
+        public async Task<List<ItemModel>> LoadSoldItems(int storeId)
         {
             StringBuilder sql = new StringBuilder();
             sql.Append("select [Id], [Name], [Description], [Price], [Sold], [OwnerId], [PaymentDistributed] ");
-            sql.Append("from Items where Sold = 1;");
+            sql.Append("from Items where Sold = 1 and StoreId = @StoreId;");
 
-            var sqlResult = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql.ToString(), new { });
+            var sqlResult = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql.ToString(), new { StoreId = storeId});
 
             await AssignOwner(sqlResult);
 
@@ -114,13 +115,13 @@ namespace ConsignmentShopLibrary.Data.SQLite
             return sqlResult;
         }
 
-        public async Task<List<ItemModel>> LoadUnsoldItems()
+        public async Task<List<ItemModel>> LoadUnsoldItems(int storeId)
         {
             StringBuilder sql = new StringBuilder();
             sql.Append("select [Id], [Name], [Description], [Price], [Sold], [OwnerId], [PaymentDistributed] ");
-            sql.Append("from Items where Sold = 0");
+            sql.Append("from Items where Sold = 0 and StoreId = @StoreId");
 
-            var sqlResult = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql.ToString(), new { });
+            var sqlResult = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql.ToString(), new { StoreId = storeId });
 
             await AssignOwner(sqlResult);
 

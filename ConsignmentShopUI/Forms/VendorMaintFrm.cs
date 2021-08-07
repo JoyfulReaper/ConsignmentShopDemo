@@ -40,11 +40,10 @@ namespace ConsignmentShopUI
 
         private readonly IVendorData _vendorData;
         private readonly IVendorService _vendorService;
-
         private bool _editing = false;
         private VendorModel _editingVendor = null;
 
-
+        public StoreModel Store { get; set; }
 
         public VendorMaintFrm(IVendorData vendorData,
             IVendorService vendorService)
@@ -58,7 +57,7 @@ namespace ConsignmentShopUI
         {
             _vendors.Clear();
 
-            var allVendors = await _vendorData.LoadAllVendors();
+            var allVendors = await _vendorData.LoadAllVendors(Store.Id);
             allVendors = allVendors.OrderBy(x => x.LastName).ToList();
 
             foreach (var v in allVendors)
@@ -104,7 +103,8 @@ namespace ConsignmentShopUI
                 {
                     FirstName = textBoxFirstName.Text,
                     LastName = textBoxLastName.Text,
-                    CommissionRate = double.Parse(textBoxCommison.Text) / 100
+                    CommissionRate = double.Parse(textBoxCommison.Text) / 100,
+                    StoreId = Store.Id
                 };
 
                 await _vendorData.CreateVendor(output);

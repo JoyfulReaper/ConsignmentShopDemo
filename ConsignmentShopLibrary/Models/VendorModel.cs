@@ -32,6 +32,8 @@ namespace ConsignmentShopLibrary.Models
         /// </summary>
         public int Id { get; set; }
 
+        public int StoreId { get; set; }
+
         /// <summary>
         /// Vendor's First Name
         /// </summary>

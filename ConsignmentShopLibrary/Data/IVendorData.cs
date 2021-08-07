@@ -42,7 +42,7 @@ namespace ConsignmentShopLibrary.Data
         /// Load all vendors from the database
         /// </summary>
         /// <returns>A List of all vendors from the database</returns>
-        Task<List<VendorModel>> LoadAllVendors();
+        Task<List<VendorModel>> LoadAllVendors(int storeId);
 
         /// <summary>
         /// Load vendor from the database

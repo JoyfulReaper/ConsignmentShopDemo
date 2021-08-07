@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using ConsignmentShopLibrary.Data;
+using ConsignmentShopLibrary.Models;
 using ConsignmentShopLibrary.Services;
 using System.Windows.Forms;
 
@@ -33,6 +34,8 @@ namespace ConsignmentShopUI.Factories
     {
         private readonly IVendorData _vendorData;
         private readonly IVendorService _vendorService;
+
+        public StoreModel Store { get; set; }
 
         public VendorMaintFormFactory(IVendorData vendorData,
             IVendorService vendorService)

@@ -112,7 +112,7 @@ namespace ConsignmentShopUI
         {
             _vendors.Clear();
 
-            var allVendors = await _vendorData.LoadAllVendors();
+            var allVendors = await _vendorData.LoadAllVendors(_store.Id);
             allVendors = allVendors.OrderBy(x => x.LastName).ToList();
 
             foreach(VendorModel v in allVendors)
@@ -131,7 +131,7 @@ namespace ConsignmentShopUI
         {
             _items.Clear();
 
-            var unsoldItems = await _itemData.LoadUnsoldItems();
+            var unsoldItems = await _itemData.LoadUnsoldItems(_store.Id);
             unsoldItems = unsoldItems.OrderBy(x => x.Name).ToList();
 
             foreach (ItemModel itm in unsoldItems)
@@ -212,7 +212,8 @@ namespace ConsignmentShopUI
                 return;
             }
 
-            Form frm = _itemMaintFormFactory.CreateForm();
+            ItemMaintFrm frm = (ItemMaintFrm) _itemMaintFormFactory.CreateForm();
+            frm.Store = _store;
             frm.ShowDialog(this);
 
             UpdateItems();
@@ -250,7 +251,8 @@ namespace ConsignmentShopUI
                 return;
             }
 
-            Form frm = _vendorMaintFormFactory.CreateForm();
+            VendorMaintFrm frm = (VendorMaintFrm) _vendorMaintFormFactory.CreateForm();
+            frm.Store = _store;
             frm.ShowDialog(this);
 
             await UpdateVendors();

@@ -44,7 +44,7 @@ namespace ConsignmentShopLibrary.Data
         /// Load all items from the database
         /// </summary>
         /// <returns>All items in the dateabase</returns>
-        Task<List<ItemModel>> LoadAllItems();
+        Task<List<ItemModel>> LoadAllItems(int storeId);
 
         /// <summary>
         /// Load items owned be a specific Vendor from the database
@@ -57,7 +57,7 @@ namespace ConsignmentShopLibrary.Data
         /// Load all sold items from the database
         /// </summary>
         /// <returns>List of all sold items</returns>
-        Task<List<ItemModel>> LoadSoldItems();
+        Task<List<ItemModel>> LoadSoldItems(int storeId);
 
         /// <summary>
         /// Loads all sold items by vendor
@@ -70,7 +70,7 @@ namespace ConsignmentShopLibrary.Data
         /// Load all unsold items from the database
         /// </summary>
         /// <returns>List of all unsold items</returns>
-        Task<List<ItemModel>> LoadUnsoldItems();
+        Task<List<ItemModel>> LoadUnsoldItems(int storeId);
 
         /// <summary>
         /// Remove an item from the database

@@ -34,6 +34,7 @@ namespace ConsignmentShopTests
     public class SQLiteVendorDataTests : DBTest
     {
         private SQLiteVendorData _vendorData;
+        private StoreModel _store;
 
         public SQLiteVendorDataTests() : base ("VendorTests.db")
         {
@@ -77,7 +78,7 @@ namespace ConsignmentShopTests
         public async Task Test_LoadAllVendors()
         {
             //TODO improve test
-            var allVendors = await _vendorData.LoadAllVendors();
+            var allVendors = await _vendorData.LoadAllVendors(_store.Id);
             Assert.NotNull(allVendors);
             Assert.True(allVendors.Count > 0);
         }
@@ -130,17 +131,30 @@ namespace ConsignmentShopTests
 
         protected override async void Seed()
         {
+            _store = new StoreModel()
+            {
+                Name = "Test Store",
+                StoreBank = 0,
+                StoreProfit = 0
+            };
+
+            StringBuilder sqlBuilder = new StringBuilder();
+            sqlBuilder.Append("insert into Stores (Name, StoreBank, StoreProfit) ");
+            sqlBuilder.Append("values (@Name, @StoreBank, @StoreProfit); ");
+            _store.Id = await _config.Connection.ExecuteRawSQL<dynamic>(sqlBuilder.ToString(), _store);
+
             VendorModel vendor = new VendorModel()
             {
                 FirstName = "Test",
                 LastName = "Vendor",
                 CommissionRate = .5,
                 PaymentDue = 0,
+                StoreId = _store.Id
             };
 
-            StringBuilder sqlBuilder = new StringBuilder();
-            sqlBuilder.Append("insert into Vendors (FirstName, LastName, CommissionRate, PaymentDue) ");
-            sqlBuilder.Append("values (@FirstName, @LastName, @CommissionRate, @PaymentDue); ");
+            sqlBuilder = new StringBuilder();
+            sqlBuilder.Append("insert into Vendors (FirstName, LastName, CommissionRate, PaymentDue, StoreId) ");
+            sqlBuilder.Append("values (@FirstName, @LastName, @CommissionRate, @PaymentDue, @StoreId); ");
 
             await _config.Connection.ExecuteRawSQL<dynamic>(sqlBuilder.ToString(), vendor);
         }

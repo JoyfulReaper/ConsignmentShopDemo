@@ -41,9 +41,10 @@ namespace ConsignmentShopUI
 
         private readonly IVendorData _vendorData;
         private readonly IItemData _itemData;
-
         private bool _editing = false;
         private ItemModel _editingItem = null;
+
+        public StoreModel Store { get; set; }
 
         public ItemMaintFrm(IVendorData vendorData,
             IItemData itemData)
@@ -63,7 +64,7 @@ namespace ConsignmentShopUI
         {
             _vendors.Clear();
 
-            var allVendors = await _vendorData.LoadAllVendors();
+            var allVendors = await _vendorData.LoadAllVendors(Store.Id);
             allVendors = allVendors.OrderBy(x => x.LastName).ToList();
 
             foreach (var vendor in allVendors)
@@ -83,7 +84,7 @@ namespace ConsignmentShopUI
 
             if (radioButtonAll.Checked)
             {
-                currentItems = await _itemData.LoadAllItems();
+                currentItems = await _itemData.LoadAllItems(Store.Id);
                 currentItems = currentItems.OrderBy(x => x.Name).ToList();
 
                 foreach (var item in currentItems)
@@ -93,7 +94,7 @@ namespace ConsignmentShopUI
             }
             else if (radioButtonSold.Checked)
             {
-                currentItems = await _itemData.LoadSoldItems();
+                currentItems = await _itemData.LoadSoldItems(Store.Id);
                 currentItems = currentItems.OrderBy(x => x.Name).ToList();
 
                 foreach (var item in currentItems)
@@ -103,7 +104,7 @@ namespace ConsignmentShopUI
             }
             else if (radioButtonUnsold.Checked)
             {
-                currentItems = await _itemData.LoadUnsoldItems();
+                currentItems = await _itemData.LoadUnsoldItems(Store.Id);
                 currentItems = currentItems.OrderBy(x => x.Name).ToList();
 
                 foreach (var item in currentItems)
@@ -177,14 +178,15 @@ namespace ConsignmentShopUI
                     Price = decimal.Parse(textBoxPrice.Text),
                     Description = textBoxDesc.Text,
                     Owner = (VendorModel)listBoxVendors.SelectedItem,
-                    Sold = checkBoxSold.Checked
+                    Sold = checkBoxSold.Checked,
+                    StoreId = Store.Id
                 };
 
                 await _itemData.CreateItem(output);
             }
 
-            UpdateItems();
-
+            await UpdateItems();
+            UpdateSelectedItemInfo();
             ClearItemInput();
         }
 
@@ -324,7 +326,7 @@ namespace ConsignmentShopUI
             }
             else
             {
-                var soldItems = await _itemData.LoadSoldItems();
+                var soldItems = await _itemData.LoadSoldItems(Store.Id);
 
                 foreach(var item in soldItems)
                 {
