@@ -26,6 +26,7 @@ SOFTWARE.
 using ConsignmentShopLibrary.DataAccess;
 using ConsignmentShopLibrary.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,6 +64,14 @@ namespace ConsignmentShopLibrary.Data.SQLite
             return store.Id;
         }
 
+        public async Task<List<StoreModel>> LoadAllStores()
+        {
+            string sql = "select [Id], [Name], [StoreBank], [StoreProfit] from Stores;";
+            var queryResult = await _dataAccess.QueryRawSQL<StoreModel, dynamic>(sql, new { });
+
+            return queryResult;
+        }
+
         public async Task<StoreModel> LoadStore(string name)
         {
             string sql = "select [Id], [Name], [StoreBank], [StoreProfit] from Stores where [Name] = @Name;";
@@ -77,7 +86,7 @@ namespace ConsignmentShopLibrary.Data.SQLite
 
             if(queryResult.Count > 1)
             {
-                throw new Exception($"Multiple stores named {name} exit.");
+                throw new Exception($"Multiple stores named {name} exist.");
             }
 
             return queryResult.First();

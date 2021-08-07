@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ConsignmentShopLibrary.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,15 +11,19 @@ namespace ConsignmentShopMVC.Controllers
 {
     public class StoreController : Controller
     {
-        public StoreController()
-        {
+        private readonly IStoreData _storeData;
 
+        public StoreController(IStoreData storeData)
+        {
+            _storeData = storeData;
         }
 
         // GET: StoreController
-        public ActionResult Index()
+        [Authorize]
+        public async Task<ActionResult> Index()
         {
-            return View();
+            var stores = await _storeData.LoadAllStores();
+            return View(stores);
         }
 
         // GET: StoreController/Details/5

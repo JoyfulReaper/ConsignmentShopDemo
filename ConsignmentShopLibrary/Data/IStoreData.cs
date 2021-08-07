@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using ConsignmentShopLibrary.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ConsignmentShopLibrary.Data
@@ -43,6 +44,8 @@ namespace ConsignmentShopLibrary.Data
         /// <param name="name">The name of the store to load</param>
         /// <returns></returns>
         Task<StoreModel> LoadStore(string name);
+
+        Task<List<StoreModel>> LoadAllStores();
 
         /// <summary>
         /// Update a store in the database

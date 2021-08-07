@@ -27,6 +27,7 @@ using ConsignmentShopLibrary.DataAccess;
 using ConsignmentShopLibrary.Models;
 using Dapper;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -96,6 +97,12 @@ namespace ConsignmentShopLibrary.Data.MSSQL
                 StoreBank = store.StoreBank,
                 StoreProfit = store.StoreProfit
             });
+        }
+
+        public async Task<List<StoreModel>> LoadAllStores()
+        {
+            var allStores = await _dataAccess.LoadData<StoreModel, dynamic>("dbo.spStores_GetAll", new { });
+            return allStores;
         }
     }
 }
