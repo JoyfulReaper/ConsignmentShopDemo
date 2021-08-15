@@ -202,7 +202,7 @@ namespace ConsignmentShopMVC.Controllers
 
                 await _vendorData.RemoveVendor(vendor);
 
-                return RedirectToAction(nameof(Index), new { Id = id });
+                return RedirectToAction(nameof(Index), new { storeId = vendor.StoreId });
             }
             catch
             {
