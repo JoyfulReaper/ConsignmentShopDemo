@@ -162,9 +162,30 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // GET: ItemsController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            return View();
+            var item = await _itemData.LoadItem(id);
+            if(item == null)
+            {
+                return NotFound();
+            }
+
+            var store = await _storeData.LoadStore(item.StoreId);
+            if (store == null)
+            {
+                return NotFound();
+            }
+
+            var owner = await _vendorData.LoadVendor(item.OwnerId);
+            if (owner == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Store"] = store.Name;
+            ViewData["Owner"] = owner.Display;
+
+            return View(item);
         }
 
         // POST: ItemsController/Delete/5
