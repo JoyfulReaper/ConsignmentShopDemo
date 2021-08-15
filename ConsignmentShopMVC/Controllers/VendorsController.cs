@@ -24,9 +24,11 @@ SOFTWARE.
 */
 
 using ConsignmentShopLibrary.Data;
+using ConsignmentShopLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +51,6 @@ namespace ConsignmentShopMVC.Controllers
 
         // GET: VendorsController
         [HttpGet]
-        [Route("Vendors/Index/{storeId:int}")]
         public async Task<IActionResult> Index(int? storeId)
         {
             if (storeId == null)
@@ -64,11 +65,14 @@ namespace ConsignmentShopMVC.Controllers
 
             var items = await _vendorData.LoadAllVendors((int)storeId);
 
+            ViewBag.Id = storeId;
+            ViewData["Store"] = (await _storeData.LoadStore(storeId.Value)).Name;
+
             return View(items);
         }
 
         // GET: VendorsController/Details/5
-        public async Task<ActionResult> Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             var vendor = await _vendorData.LoadVendor(id);
             if(vendor == null)
@@ -82,40 +86,85 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // GET: VendorsController/Create
-        public ActionResult Create()
+        public async Task<IActionResult> Create(int? storeId)
         {
+            var stores = await _storeData.LoadAllStores();
+
+            StoreModel selected = null;
+            if (storeId != null)
+            {
+                selected = await _storeData.LoadStore(storeId.Value);
+            }
+
+            ViewBag.Id = storeId;
+            ViewBag.StoreId = new SelectList(stores, "Id", "Name", selected?.Id);
+
             return View();
         }
 
         // POST: VendorsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Create([Bind("StoreId,FirstName,LastName,CommissionRate")] VendorModel vendor)
         {
+
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await _vendorData.CreateVendor(vendor);
+                }
+
+                return RedirectToAction(nameof(Index), new { storeId = vendor.StoreId });
             }
             catch
             {
-                return View();
+                return View(vendor);
             }
         }
 
         // GET: VendorsController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
+            var vendor = await _vendorData.LoadVendor(id);
+            if(vendor == null)
+            {
+                return NotFound();
+            }
+
+            StoreModel store = await _storeData.LoadStore(vendor.StoreId);
+            if (store == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                ViewData["Store"] = store.Name;
+            }
+
+            return View(vendor);
         }
 
         // POST: VendorsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Edit([Bind("FirstName, LastName, CommissionRate")] VendorModel vendor, int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var vendorDb = await _vendorData.LoadVendor(id);
+                if(vendorDb == null)
+                {
+                    return NotFound();
+                }
+
+                vendorDb.FirstName = vendor.FirstName;
+                vendorDb.LastName = vendor.LastName;
+                vendorDb.CommissionRate = vendor.CommissionRate;
+
+                await _vendorData.UpdateVendor(vendorDb);
+
+                return RedirectToAction(nameof(Index), new { storeId = vendorDb.StoreId });
             }
             catch
             {
@@ -124,7 +173,7 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // GET: VendorsController/Delete/5
-        public async Task<ActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var vendor = await _vendorData.LoadVendor(id);
 
@@ -139,13 +188,21 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // POST: VendorsController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var vendor = await _vendorData.LoadVendor(id);
+                if(vendor == null)
+                {
+                    return NotFound();
+                }
+
+                await _vendorData.RemoveVendor(vendor);
+
+                return RedirectToAction(nameof(Index), new { Id = id });
             }
             catch
             {
