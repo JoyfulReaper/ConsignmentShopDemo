@@ -5,7 +5,7 @@ begin
 	
 	set nocount on;
 
-	select [Id], [Name], [Description], [Price], [Sold], [OwnerId], [PaymentDistributed] 
+	select [Id], [Name], [Description], [Price], [Sold], [OwnerId], [PaymentDistributed], [StoreId] 
 	from Items
 	where sold = 0 and StoreId = @StoreId;
 

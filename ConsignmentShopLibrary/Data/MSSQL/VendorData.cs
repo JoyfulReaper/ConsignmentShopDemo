@@ -82,10 +82,7 @@ namespace ConsignmentShopLibrary.Data.MSSQL
 
         public async Task<VendorModel> LoadVendor(int id)
         {
-            string sql = "select [Id], [FirstName], [LastName], [CommissionRate], [PaymentDue] from Vendors where Id = @Id;";
-            var queryResult = await _dataAccess.QueryRawSQL<VendorModel, dynamic>(sql, new { });
-
-            return queryResult.First();
+            return (await _dataAccess.LoadData<VendorModel, dynamic>("dbo.spVendors_Get", new { Id = id })).FirstOrDefault();
         }
     }
 }

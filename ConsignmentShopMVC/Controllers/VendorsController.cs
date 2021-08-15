@@ -24,6 +24,7 @@ SOFTWARE.
 */
 
 using ConsignmentShopLibrary.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -33,6 +34,7 @@ using System.Threading.Tasks;
 
 namespace ConsignmentShopMVC.Controllers
 {
+    [Authorize]
     public class VendorsController : Controller
     {
         private readonly IVendorData _vendorData;
@@ -66,9 +68,17 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // GET: VendorsController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            return View();
+            var vendor = await _vendorData.LoadVendor(id);
+            if(vendor == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Store"] = (await _storeData.LoadStore(vendor.StoreId)).Name;
+
+            return View(vendor);
         }
 
         // GET: VendorsController/Create
@@ -114,9 +124,18 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // GET: VendorsController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            return View();
+            var vendor = await _vendorData.LoadVendor(id);
+
+            if(vendor == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Store"] = (await _storeData.LoadStore(vendor.StoreId)).Name;
+
+            return View(vendor);
         }
 
         // POST: VendorsController/Delete/5

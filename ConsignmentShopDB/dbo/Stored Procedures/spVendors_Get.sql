@@ -5,7 +5,7 @@ begin
 
 	set nocount on;
 
-	select [Id], [FirstName], [LastName], [CommissionRate], [PaymentDue]
+	select [Id], [FirstName], [LastName], [CommissionRate], [PaymentDue], [StoreId]
 	from dbo.Vendors
 	where Id = @Id;
 
