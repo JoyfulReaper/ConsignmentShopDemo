@@ -1,21 +1,68 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using ConsignmentShopLibrary.Models
+
+@model IEnumerable<StoreModel>
+
+@inject UserManager<IdentityUser> userManger 
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Consignment Shop Demo</h1>
-    <p>
-        Welcome to the ASP.NET MVC Consignment shop demo! To prevent abuse of this demo you will be required to register in order access it.
-    </p>
+
+<div class="row">
+    <div class="col">
+        <div class="text-center">
+            <h1 class="display-4">Consignment Shop Demo</h1>
+            <p class="lead">
+                Welcome to the ASP.NET MVC Consignment shop demo! To prevent abuse of this demo you will be required to register in order access it.
+            </p>
+        </div>
+    </div>
 </div>
 
-<div>
-    <p>
-        Please select an option:
-    </p>
-    <ul>
-        <li>
-            Create or modify a <a asp-controller="Stores" asp-action="Index">store</a>
-        </li>
-    </ul>
+<div class="row mt-4">
+    <div class="col">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <p>
+                Create or modify a <a asp-controller="Stores" asp-action="Index">store</a>
+            </p>
+        }
+        else
+        {
+            <p>
+                Please login to create a new store.
+            </p>
+        }
+    </div>
+</div>
+
+<div class="mt-3 row">
+    <div class="col">
+        <h3>Stores: </h3>
+        @if(User.Identity.IsAuthenticated)
+        {
+            @foreach(var store in Model)
+            {       
+                <p>
+                    <strong>
+                        @Html.DisplayFor(modelItem => store.Name)
+                    </strong>
+                    <br />
+
+                    Maintain <a asp-controller="Vendors" asp-action="Index" asp-route-storeId="@store.Id">Vendors</a>
+                    <br />
+                    Maintain <a asp-controller="Items" asp-action="Index" asp-route-storeId="@store.Id">Items</a>
+                </p>
+                <hr />
+            }
+        }
+        else
+        {
+            <p>
+                Please login to see stores.
+            </p>
+        }
+    </div>
 </div>
