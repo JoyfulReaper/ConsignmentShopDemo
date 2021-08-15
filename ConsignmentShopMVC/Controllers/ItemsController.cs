@@ -24,8 +24,10 @@ SOFTWARE.
 */
 
 using ConsignmentShopLibrary.Data;
+using ConsignmentShopLibrary.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -119,9 +121,29 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // GET: ItemsController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
+            var item = await _itemData.LoadItem(id);
+            if(item == null)
+            {
+                return NotFound();
+            }
+
+            StoreModel store = await _storeData.LoadStore(item.StoreId);
+            if (store == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                ViewData["Store"] = store.Name;
+            }
+
+            var vendors = await _vendorData.LoadAllVendors(store.Id);
+            var selected = await _vendorData.LoadVendor(item.OwnerId);
+            ViewBag.VendorId = new SelectList(vendors, "Id", "Display", selected?.Id);
+
+            return View(item);
         }
 
         // POST: ItemsController/Edit/5

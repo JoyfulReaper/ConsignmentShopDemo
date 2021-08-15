@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace ConsignmentShopLibrary.Models
 {
     public class ItemModel
@@ -32,6 +34,7 @@ namespace ConsignmentShopLibrary.Models
         /// </summary>
         public int Id { get; set; }
 
+        [Display(Name = "Store")]
         public int StoreId { get; set; }
 
         /// <summary>
@@ -62,6 +65,7 @@ namespace ConsignmentShopLibrary.Models
         /// <summary>
         /// The Id of the owner of this item
         /// </summary>
+        [Display(Name = "Vendor")]
         public int OwnerId { get; set; }
 
         /// <summary>

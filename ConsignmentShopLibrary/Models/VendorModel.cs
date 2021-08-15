@@ -34,6 +34,7 @@ namespace ConsignmentShopLibrary.Models
         /// </summary>
         public int Id { get; set; }
 
+        [Display(Name = "Store")]
         public int StoreId { get; set; }
 
         /// <summary>
