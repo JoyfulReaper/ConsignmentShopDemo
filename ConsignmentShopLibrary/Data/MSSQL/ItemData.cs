@@ -142,7 +142,7 @@ namespace ConsignmentShopLibrary.Data.MSSQL
 
         public async Task<ItemModel> LoadItem(int id)
         {
-            string sql = "select [Id], [Name], [Description], [Price], [Sold], [OwnerId], [PaymentDistributed] from Items where Id = @Id;";
+            string sql = "select [Id], [Name], [Description], [Price], [Sold], [OwnerId], [PaymentDistributed], [StoreId] from Items where Id = @Id;";
             var queryResult = await _dataAccess.QueryRawSQL<ItemModel, dynamic>(sql, new { Id = id });
 
             await AssignOwner(queryResult);

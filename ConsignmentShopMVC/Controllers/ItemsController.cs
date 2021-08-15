@@ -37,17 +37,19 @@ namespace ConsignmentShopMVC.Controllers
     {
         private readonly IItemData _itemData;
         private readonly IStoreData _storeData;
+        private readonly IVendorData _vendorData;
 
         public ItemsController(IItemData itemData,
-            IStoreData storeData)
+            IStoreData storeData,
+            IVendorData vendorData)
         {
             _itemData = itemData;
             _storeData = storeData;
+            _vendorData = vendorData;
         }
 
         // GET: ItemsController
         [HttpGet]
-        [Route("Items/Index/{storeId:int}")]
         public async Task<IActionResult> Index(int? storeId)
         {
             if(storeId == null)
@@ -55,20 +57,44 @@ namespace ConsignmentShopMVC.Controllers
                 return NotFound();
             }
 
-            if(await _storeData.LoadStore((int)storeId) == null)
+            var store = await _storeData.LoadStore((int)storeId);
+            if (store == null)
             {
                 return NotFound();
             }
 
             var items = await _itemData.LoadAllItems((int)storeId);
 
+            ViewData["Store"] = store.Name;
+
             return View(items);
         }
 
         // GET: ItemsController/Details/5
-        public ActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            return View();
+            var item = await _itemData.LoadItem(id);
+            if(item == null)
+            {
+                return NotFound();
+            }
+
+            var store = await _storeData.LoadStore(item.StoreId);
+            if(store == null)
+            {
+                return NotFound();
+            }
+
+            var owner = await _vendorData.LoadVendor(item.OwnerId);
+            if (owner == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["Store"] = store.Name;
+            ViewData["Owner"] = owner.Display;
+
+            return View(item);
         }
 
         // GET: ItemsController/Create
