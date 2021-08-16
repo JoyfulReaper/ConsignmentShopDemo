@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 
 namespace ConsignmentShopMVC.Controllers
 {
+    [Authorize]
     public class StoresController : Controller
     {
         private readonly IStoreData _storeData;
@@ -42,7 +43,6 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // GET: StoreController
-        [Authorize]
         public async Task<IActionResult> Index()
         {
             var stores = await _storeData.LoadAllStores();
@@ -50,7 +50,6 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // GET: StoreController/Details/5
-        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if(id == null)
@@ -68,7 +67,6 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // GET: StoreController/Create
-        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -76,15 +74,14 @@ namespace ConsignmentShopMVC.Controllers
 
         // POST: StoreController/Create
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Name")] StoreModel store)
+        public async Task<IActionResult> Create([Bind("Name")] StoreModel store)
         {
             if(ModelState.IsValid)
             {
                 store.StoreProfit = 0;
                 store.StoreBank = 0;
-                _storeData.CreateStore(store);
+                await _storeData.CreateStore(store);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -93,7 +90,6 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // GET: StoreController/Edit/5
-        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -113,7 +109,6 @@ namespace ConsignmentShopMVC.Controllers
         // POST: StoreController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("Id, Name")] StoreModel store)
         {
             if (id != store.Id)
@@ -139,7 +134,6 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // GET: StoreController/Delete/5
-        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if(id == null)
@@ -159,7 +153,6 @@ namespace ConsignmentShopMVC.Controllers
 
         // POST: StoreController/Delete/5
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {

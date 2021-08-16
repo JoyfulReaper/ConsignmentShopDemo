@@ -26,6 +26,7 @@ SOFTWARE.
 using ConsignmentShopLibrary.DataAccess;
 using ConsignmentShopLibrary.Models;
 using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -46,11 +47,16 @@ namespace ConsignmentShopLibrary.Data.MSSQL
         {
             DynamicParameters p = new DynamicParameters();
 
+            if(item.OwnerId < 1 && item.Owner == null)
+            {
+                throw new ArgumentException("Owner is null and OwnerId is < 1!", nameof(item));
+            }
+
             p.Add("Name", item.Name);
             p.Add("Description", item.Description);
             p.Add("Price", item.Price);
             p.Add("Sold", item.Sold);
-            p.Add("OwnerId", item.Owner.Id);
+            p.Add("OwnerId", item.Owner?.Id ?? item.OwnerId);
             p.Add("PaymentDistributed", item.PaymentDistributed);
             p.Add("StoreId", item.StoreId);
             p.Add("Id", 0, DbType.Int32, direction: ParameterDirection.Output);
@@ -63,6 +69,11 @@ namespace ConsignmentShopLibrary.Data.MSSQL
 
         public Task<int> UpdateItem(ItemModel item)
         {
+            if (item.OwnerId < 1 && item.Owner == null)
+            {
+                throw new ArgumentException("Owner is null and OwnerId is < 1!", nameof(item));
+            }
+
             return _dataAccess.SaveData("dbo.spItems_Update", new
             {
                 Id = item.Id,
@@ -70,7 +81,7 @@ namespace ConsignmentShopLibrary.Data.MSSQL
                 Description = item.Description,
                 Price = item.Price,
                 Sold = item.Sold,
-                OwnerId = item.Owner.Id,
+                OwnerId = item.Owner?.Id ?? item.OwnerId,
                 PaymentDistributed = item.PaymentDistributed
             });
         }

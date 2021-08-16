@@ -60,6 +60,7 @@ namespace ConsignmentShopLibrary.Models
         /// <summary>
         /// Flag for if the vendor had been paid for this item
         /// </summary>
+        [Display(Name = "Payment Distributed")]
         public bool PaymentDistributed { get; set; }
 
         /// <summary>

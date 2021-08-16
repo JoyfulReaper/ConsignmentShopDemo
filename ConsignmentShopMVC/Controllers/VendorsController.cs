@@ -29,8 +29,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -58,7 +56,7 @@ namespace ConsignmentShopMVC.Controllers
                 return NotFound();
             }
 
-            if (await _storeData.LoadStore((int)storeId) == null)
+            if (await _storeData.LoadStore(storeId.Value) == null)
             {
                 return NotFound();
             }
@@ -75,7 +73,7 @@ namespace ConsignmentShopMVC.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var vendor = await _vendorData.LoadVendor(id);
-            if(vendor == null)
+            if (vendor == null)
             {
                 return NotFound();
             }
@@ -90,14 +88,20 @@ namespace ConsignmentShopMVC.Controllers
         {
             var stores = await _storeData.LoadAllStores();
 
+            if (stores == null || stores.Count < 1)
+            {
+                return RedirectToAction("ShowError", "Home", new { error = "No stores exist!" });
+            }
+
             StoreModel selected = null;
             if (storeId != null)
             {
-                selected = await _storeData.LoadStore(storeId.Value);
+                //selected = await _storeData.LoadStore(storeId.Value);
+                selected = stores.Where(s => s.Id == storeId).FirstOrDefault();
             }
 
-            ViewBag.Id = storeId;
-            ViewBag.StoreId = new SelectList(stores, "Id", "Name", selected?.Id);
+            ViewBag.StoreId = storeId;
+            ViewBag.StoreList = new SelectList(stores, "Id", "Name", selected?.Id);
 
             return View();
         }
@@ -107,20 +111,20 @@ namespace ConsignmentShopMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("StoreId,FirstName,LastName,CommissionRate")] VendorModel vendor)
         {
-
             try
             {
                 if (ModelState.IsValid)
                 {
                     await _vendorData.CreateVendor(vendor);
+                    return RedirectToAction(nameof(Index), new { storeId = vendor.StoreId });
                 }
-
-                return RedirectToAction(nameof(Index), new { storeId = vendor.StoreId });
             }
             catch
             {
                 return View(vendor);
             }
+
+            return View(vendor);
         }
 
         // GET: VendorsController/Edit/5
@@ -152,24 +156,29 @@ namespace ConsignmentShopMVC.Controllers
         {
             try
             {
-                var vendorDb = await _vendorData.LoadVendor(id);
-                if(vendorDb == null)
+                if (ModelState.IsValid)
                 {
-                    return NotFound();
+                    var vendorDb = await _vendorData.LoadVendor(id);
+                    if (vendorDb == null)
+                    {
+                        return NotFound();
+                    }
+
+                    vendorDb.FirstName = vendor.FirstName;
+                    vendorDb.LastName = vendor.LastName;
+                    vendorDb.CommissionRate = vendor.CommissionRate;
+
+                    await _vendorData.UpdateVendor(vendorDb);
+
+                    return RedirectToAction(nameof(Index), new { storeId = vendorDb.StoreId });
                 }
-
-                vendorDb.FirstName = vendor.FirstName;
-                vendorDb.LastName = vendor.LastName;
-                vendorDb.CommissionRate = vendor.CommissionRate;
-
-                await _vendorData.UpdateVendor(vendorDb);
-
-                return RedirectToAction(nameof(Index), new { storeId = vendorDb.StoreId });
             }
             catch
             {
-                return View();
+                return View(vendor);
             }
+
+            return View(vendor);
         }
 
         // GET: VendorsController/Delete/5

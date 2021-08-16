@@ -9,7 +9,7 @@
 <h3>@ViewData["Store"]</h3>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" asp-route-storeId="@ViewBag.StoreId">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -57,7 +57,7 @@
                 @Html.DisplayFor(modelItem => item.PaymentDistributed)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.OwnerId)
+                @Html.DisplayFor(modelItem => item.Owner.Display)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Display)

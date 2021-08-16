@@ -67,6 +67,7 @@ namespace ConsignmentShopMVC.Controllers
 
             var items = await _itemData.LoadAllItems((int)storeId);
 
+            ViewBag.StoreId = storeId;
             ViewData["Store"] = store.Name;
 
             return View(items);
@@ -100,24 +101,56 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // GET: ItemsController/Create
-        public ActionResult Create()
+        public async Task<IActionResult> Create(int? storeId)
         {
+            var stores = await _storeData.LoadAllStores();
+
+            StoreModel selected = null;
+            List<VendorModel> vendors = null;
+
+            if(storeId != null)
+            {
+                //selected = await _storeData.LoadStore(storeId.Value);
+                selected = stores.Where(s => s.Id == storeId).FirstOrDefault();
+
+                vendors = await _vendorData.LoadAllVendors(storeId.Value);
+                if(vendors == null || vendors.Count < 1)
+                {
+                    return RedirectToAction("ShowError", "Home", new { error = $"No vendors exist" });
+                }
+            }
+
+            ViewBag.StoreId = storeId;
+            ViewBag.StoreList = new SelectList(stores, "Id", "Name", selected?.Id);
+            ViewBag.VendorList = new SelectList(vendors, "Id", "Display");
+
             return View();
         }
 
         // POST: ItemsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Create([Bind("StoreId,Name,Description,Price,OwnerId")] ItemModel item)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    item.Sold = false;
+                    item.PaymentDistributed = false;
+
+                    await _itemData.CreateItem(item);
+
+                    return RedirectToAction(nameof(Index), new { storeId = item.StoreId });
+                }
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                ModelState.AddModelError(string.Empty, $"An exception occured: {e.Message}");
+                return View(item);
             }
+
+            return View(item);
         }
 
         // GET: ItemsController/Edit/5
@@ -151,16 +184,36 @@ namespace ConsignmentShopMVC.Controllers
         // POST: ItemsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, [Bind("")] ItemModel item)
+        public async  Task<IActionResult> Edit(int id, [Bind("")] ItemModel item)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                if(ModelState.IsValid)
+                {
+                    var itemDb = await _itemData.LoadItem(id);
+                    if(itemDb == null)
+                    {
+                        return NotFound();
+                    }
+
+                    itemDb.Name = item.Name;
+                    itemDb.Description = item.Description;
+                    itemDb.Price = item.Price;
+                    itemDb.Sold = item.Sold;
+                    itemDb.PaymentDistributed = item.PaymentDistributed;
+                    itemDb.Owner = item.Owner;
+
+                    await _itemData.UpdateItem(itemDb);
+
+                    return RedirectToAction(nameof(Index), new { storeId = itemDb.StoreId });
+                }
             }
             catch
             {
-                return View();
+                return View(item);
             }
+
+            return View(item);
         }
 
         // GET: ItemsController/Delete/5

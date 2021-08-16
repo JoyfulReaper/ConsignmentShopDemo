@@ -27,10 +27,7 @@ using ConsignmentShopLibrary.Data;
 using ConsignmentShopMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ConsignmentShopMVC.Controllers
@@ -54,15 +51,19 @@ namespace ConsignmentShopMVC.Controllers
             return View(stores);
         }
 
-        public IActionResult Privacy()
+        public IActionResult ShowError(string error)
         {
-            return View();
+            return View("ShowError", error);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        public IActionResult Privacy()
+        {
+            return View();
         }
     }
 }
