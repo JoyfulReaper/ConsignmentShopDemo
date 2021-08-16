@@ -124,6 +124,7 @@ namespace ConsignmentShopMVC.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var item = await _itemData.LoadItem(id);
+
             if(item == null)
             {
                 return NotFound();
@@ -137,6 +138,7 @@ namespace ConsignmentShopMVC.Controllers
             else
             {
                 ViewData["Store"] = store.Name;
+                ViewData["Item"] = item.Name;
             }
 
             var vendors = await _vendorData.LoadAllVendors(store.Id);
@@ -149,7 +151,7 @@ namespace ConsignmentShopMVC.Controllers
         // POST: ItemsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, [Bind("")] ItemModel item)
         {
             try
             {
