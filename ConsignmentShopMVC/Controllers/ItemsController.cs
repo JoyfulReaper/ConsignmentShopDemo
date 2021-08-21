@@ -244,12 +244,30 @@ namespace ConsignmentShopMVC.Controllers
         }
 
         // POST: ItemsController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {
+                var item = await _itemData.LoadItem(id);
+                if(item == null)
+                {
+                    return NotFound();
+                }
+
+                if (item.Sold && !item.PaymentDistributed)
+                {
+                    ModelState.AddModelError("", $"{item.Owner.FullName} needs to be paid before the item can be deleted!");
+
+                    ViewData["Store"] = (await _storeData.LoadStore(item.StoreId)).Name;
+                    ViewData["Owner"] = item.Owner.Display;
+
+                    return View(item);
+                }
+
+                await _itemData.RemoveItem(item);
+
                 return RedirectToAction(nameof(Index));
             }
             catch

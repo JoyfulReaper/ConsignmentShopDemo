@@ -50,7 +50,8 @@
                         @Html.DisplayFor(modelItem => store.Name)
                     </strong>
                     <br />
-
+                    Store @Html.ActionLink("Details", "Details", "Stores", new { id = store.Id })
+                    <br />
                     Maintain <a asp-controller="Vendors" asp-action="Index" asp-route-storeId="@store.Id">Vendors</a>
                     <br />
                     Maintain <a asp-controller="Items" asp-action="Index" asp-route-storeId="@store.Id">Items</a>

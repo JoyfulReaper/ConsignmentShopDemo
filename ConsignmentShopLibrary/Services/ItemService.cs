@@ -52,7 +52,7 @@ namespace ConsignmentShopLibrary.Services
 
         public async Task PurchaseItems(List<ItemModel> shoppingCart)
         {
-            StoreModel store = await _storeData.LoadStore(_config.Configuration.GetSection("Store:Name").Value);
+            StoreModel store = await _storeData.LoadStore(shoppingCart.FirstOrDefault().StoreId);
 
             foreach (ItemModel item in shoppingCart)
             {

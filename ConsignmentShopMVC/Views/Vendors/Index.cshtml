@@ -57,9 +57,15 @@
                 @Html.DisplayFor(modelItem => item.FullName)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id=item.Id, storeId=item.StoreId }) |
-                @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+                @using (Html.BeginForm("PayVendor", "Vendors", FormMethod.Post, new { id = "payVendor", @style = "display: inline;" }))
+                {
+                    @Html.Hidden("id", item.Id);
+                    @Html.AntiForgeryToken();
+                    <a href="javascript:document.getElementById('payVendor').submit()">Pay Vendor</a> 
+                }
+                | @Html.ActionLink("Edit", "Edit", new { id = item.Id, storeId = item.StoreId }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
             </td>
         </tr>
 }

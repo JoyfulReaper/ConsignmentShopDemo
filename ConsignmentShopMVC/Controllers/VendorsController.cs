@@ -25,10 +25,12 @@ SOFTWARE.
 
 using ConsignmentShopLibrary.Data;
 using ConsignmentShopLibrary.Models;
+using ConsignmentShopLibrary.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -39,12 +41,36 @@ namespace ConsignmentShopMVC.Controllers
     {
         private readonly IVendorData _vendorData;
         private readonly IStoreData _storeData;
+        private readonly IVendorService _vendorService;
 
         public VendorsController(IVendorData vendorData,
-            IStoreData storeData)
+            IStoreData storeData,
+            IVendorService vendorService)
         {
             _vendorData = vendorData;
             _storeData = storeData;
+            _vendorService = vendorService;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PayVendor(int id)
+        {
+            var vendor = await _vendorData.LoadVendor(id);
+            var store = await _storeData.LoadStore(vendor.StoreId);
+            if (vendor == null || store == null)
+            {
+                return NotFound();
+            }
+
+            if(store.StoreBank < vendor.PaymentDue)
+            {
+                return RedirectToAction("Home", "ShowError", new { error = "The store does not have enough money to pay the vendor!" });
+            }
+
+            await _vendorService.PayVendor(vendor);
+
+            return RedirectToAction("Index", new { storeId = store.Id });
         }
 
         // GET: VendorsController
@@ -209,7 +235,23 @@ namespace ConsignmentShopMVC.Controllers
                     return NotFound();
                 }
 
-                await _vendorData.RemoveVendor(vendor);
+                if(vendor.PaymentDue > 0)
+                {
+                    ModelState.AddModelError("", "The vendor cannot be removed until after they have been paid");
+                    return View(vendor);
+                }
+
+                try
+                {
+                    await _vendorService.RemoveVendor(vendor);
+                }
+                catch (InvalidOperationException e)
+                {
+                    ModelState.AddModelError("", e.Message);
+                    return View(vendor);
+                }
+
+                //await _vendorData.RemoveVendor(vendor);
 
                 return RedirectToAction(nameof(Index), new { storeId = vendor.StoreId });
             }

@@ -56,8 +56,7 @@ namespace ConsignmentShopLibrary.Services
                 throw new ArgumentNullException(nameof(vendor), "Vendor cannot be null.");
             }
 
-            string storeName = _config.Configuration.GetSection("Store:Name").Value;
-            StoreModel store = await _storeData.LoadStore(storeName);
+            StoreModel store = await _storeData.LoadStore(vendor.StoreId);
 
             var itemsOwnedByVendor = await _itemData.LoadSoldItemsByVendor(vendor);
 
@@ -90,7 +89,7 @@ namespace ConsignmentShopLibrary.Services
                 await _vendorData.UpdateVendor(vendor);
             }
 
-            _storeData.UpdateStore(store);
+            await _storeData.UpdateStore(store);
         }
 
         public async Task RemoveVendor(VendorModel vendor)
