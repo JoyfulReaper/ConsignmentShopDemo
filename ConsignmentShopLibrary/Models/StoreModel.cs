@@ -23,6 +23,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.ComponentModel.DataAnnotations;
+
 namespace ConsignmentShopLibrary.Models
 {
     public class StoreModel
@@ -40,11 +42,13 @@ namespace ConsignmentShopLibrary.Models
         /// <summary>
         /// The total amount in the store's bank account
         /// </summary>
+        [Display(Name = "Store Bank")]
         public decimal StoreBank { get; set; }
 
         /// <summary>
         /// The total profit of the store
         /// </summary>
+        [Display(Name = "Store Profits")]
         public decimal StoreProfit { get; set; }
     }
 }

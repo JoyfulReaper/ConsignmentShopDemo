@@ -1,0 +1,35 @@
+﻿@using ConsignmentShopLibrary.Models
+@model StoreModel
+
+@{ 
+    ViewData["Title"] = "POS Screen";
+}
+
+<div class="row">
+    <div class="col" style="color: blue;">
+        <h1 class="text-center">Consignment Shop Demo</h1>
+        <h2>@Model.Name</h2>
+    </div>
+</div>
+
+<div class="row  mt-2">
+    <div class="col-5">
+        <label class="form-label">Store Items</label>
+        <textarea class="form-control" rows="5"></textarea>
+    </div>
+    <div class="col-2 d-flex flex-column justify-content-center">
+        <button class="btn btn-primary mt-2 mb-2">Add To Cart --> </button>
+        <button class="btn btn-primary"><-- Remove Item</button>
+    </div>
+    <div class="col-5">
+        Total
+        <label class="form-label">Shopping Cart</label>
+        <textarea class="form-control" rows="5"></textarea>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+
+    </div>
+</div>

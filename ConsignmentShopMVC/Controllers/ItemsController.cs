@@ -268,7 +268,7 @@ namespace ConsignmentShopMVC.Controllers
 
                 await _itemData.RemoveItem(item);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", new { storeId = item.StoreId });
             }
             catch
             {

@@ -49,6 +49,23 @@ namespace ConsignmentShopMVC.Controllers
             return View(stores);
         }
 
+        public async Task<IActionResult> Pos(int? storeId)
+        {
+            if (storeId == null)
+            {
+                return NotFound();
+            }
+
+            var store = await _storeData.LoadStore(storeId.Value);
+            if(store == null)
+            {
+                return NotFound();
+            }
+
+            return View(store);
+
+        }
+
         // GET: StoreController/Details/5
         public async Task<IActionResult> Details(int? id)
         {
