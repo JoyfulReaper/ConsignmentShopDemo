@@ -25,6 +25,7 @@ SOFTWARE.
 
 using ConsignmentShopLibrary.Data;
 using ConsignmentShopLibrary.Models;
+using ConsignmentShopMVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +63,12 @@ namespace ConsignmentShopMVC.Controllers
                 return NotFound();
             }
 
-            return View(store);
+            PosVm vm = new PosVm
+            {
+                Store = store
+            };
+
+            return View(vm);
 
         }
 
