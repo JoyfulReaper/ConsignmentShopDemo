@@ -50,11 +50,11 @@ namespace ConsignmentShopMVC
             services.AddSingleton(_ => config);
 
             services.AddScoped<IDataAccess, SqlDb>()
-                .AddTransient<IItemData, ItemData>()
-                .AddTransient<IStoreData, StoreData>()
-                .AddTransient<IVendorData, VendorData>()
-                .AddTransient<IItemService, ItemService>()
-                .AddTransient<IVendorService, VendorService>();
+                .AddScoped<IItemData, ItemData>()
+                .AddScoped<IStoreData, StoreData>()
+                .AddScoped<IVendorData, VendorData>()
+                .AddScoped<IItemService, ItemService>()
+                .AddScoped<IVendorService, VendorService>();
 
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
 

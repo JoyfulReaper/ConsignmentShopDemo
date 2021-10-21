@@ -5,7 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Store Details</h1>
+<h1 class="display-6">Store Details</h1>
+<h2 class="h6">@Model.Name</h2>
+
+<a class="btn btn-info" asp-controller="Stores" asp-action="POS" asp-route-storeId="@Model.Id">POS</a>
+<a class="btn btn-info" asp-controller="Vendors" asp-action="Index" asp-route-storeId="@Model.Id">Vendors</a>
+<a class="btn btn-info" asp-controller="Items" asp-action="Index" asp-route-storeId="@Model.Id">Items</a>
 
 <div>
     <hr />

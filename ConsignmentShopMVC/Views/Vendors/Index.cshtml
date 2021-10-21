@@ -5,11 +5,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Vendors</h1>
-<h3>@ViewData["Store"]</h3>
+<h1 class="display-6">Vendors</h1>
+<h2 class="h6">@ViewData["Store"]</h2>
 
 <p>
-    <a asp-action="Create" asp-route-storeId="@ViewBag.Id">Create New</a>
+    <a class="btn btn-primary" asp-action="Create" asp-route-storeId="@ViewBag.Id">New Vendor</a>
+    <a class="btn btn-info" asp-controller="Stores" asp-action="Details" asp-route-Id="@ViewBag.Id">Store</a>
 </p>
 <table class="table">
     <thead>
