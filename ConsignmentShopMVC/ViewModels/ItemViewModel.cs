@@ -23,28 +23,63 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace ConsignmentShopLibrary.Models
+using System.ComponentModel.DataAnnotations;
+
+namespace ConsignmentShopMVC.ViewModels
 {
-    public class StoreModel
+    public class ItemViewModel
     {
         /// <summary>
-        /// The id of this store's database row
+        /// Item's database row Id
         /// </summary>
         public int Id { get; set; }
 
+        [Display(Name = "Store")]
+        public int StoreId { get; set; }
+
         /// <summary>
-        /// The name of the store
+        /// The name of the item
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// The total amount in the store's bank account
+        /// The Description of the item
         /// </summary>
-        public decimal StoreBank { get; set; }
+        public string Description { get; set; }
 
         /// <summary>
-        /// The total profit of the store
+        /// The price of the item
         /// </summary>
-        public decimal StoreProfit { get; set; }
+        public decimal Price { get; set; }
+
+        /// <summary>
+        /// Flag for if the item has been sold
+        /// </summary>
+        public bool Sold { get; set; }
+
+        /// <summary>
+        /// Flag for if the vendor had been paid for this item
+        /// </summary>
+        [Display(Name = "Payment Distributed")]
+        public bool PaymentDistributed { get; set; }
+
+        /// <summary>
+        /// The Id of the owner of this item
+        /// </summary>
+        [Display(Name = "Vendor")]
+        public int OwnerId { get; set; }
+
+        /// <summary>
+        /// The owner of this item
+        /// </summary>
+        public VendorViewModel Owner { get; set; }
+
+        /// <summary>
+        /// The display name of this item
+        /// </summary>
+        public string Display
+        {
+            get => $"{ Name } - {Price:C2}";
+        }
     }
 }

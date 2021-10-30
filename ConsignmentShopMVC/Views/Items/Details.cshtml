@@ -21,14 +21,14 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.*@
 
-@model ConsignmentShopLibrary.Models.ItemModel
+@model ConsignmentShopMVC.ViewModels.ItemDetailsViewModel
 
 @{
     ViewData["Title"] = "Item Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1 class="display-6">@Model.Name Details</h1>
+<h1 class="display-6">@Model.Item.Name Details</h1>
 
 <div>
     <hr />
@@ -37,53 +37,53 @@
             Store
         </dt>
         <dd class="col-sm-10">
-            @ViewData["Store"];
+            @Model.Store.Name;
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Item.Name)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.Item.Name)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.Item.Description)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Description)
+            @Html.DisplayFor(model => model.Item.Description)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
+            @Html.DisplayNameFor(model => model.Item.Price)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Price)
+            @Html.DisplayFor(model => model.Item.Price)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Sold)
+            @Html.DisplayNameFor(model => model.Item.Sold)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Sold)
+            @Html.DisplayFor(model => model.Item.Sold)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PaymentDistributed)
+            @Html.DisplayNameFor(model => model.Item.PaymentDistributed)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PaymentDistributed)
+            @Html.DisplayFor(model => model.Item.PaymentDistributed)
         </dd>
         <dt class="col-sm-2">
             Vendor
         </dt>
         <dd class="col-sm-10">
-            @ViewData["Owner"];
+            @Model.Owner.Display
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Display)
+            @Html.DisplayNameFor(model => model.Item.Display)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Display)
+            @Html.DisplayFor(model => model.Item.Display)
         </dd>
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id, storeId = Model.StoreId }) |
-    <a asp-action="Index" asp-route-storeId="@Model.StoreId">Back to List</a>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Item.Id, storeId = Model.Item.StoreId }) |
+    <a asp-action="Index" asp-route-storeId="@Model.Item.StoreId">Back to List</a>
 </div>

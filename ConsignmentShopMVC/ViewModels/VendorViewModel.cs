@@ -23,58 +23,63 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace ConsignmentShopLibrary.Models
+using System.ComponentModel.DataAnnotations;
+
+namespace ConsignmentShopMVC.ViewModels
 {
-    public class ItemModel
+    public class VendorViewModel
     {
         /// <summary>
-        /// Item's database row Id
+        /// Id of database row
         /// </summary>
         public int Id { get; set; }
 
+        [Display(Name = "Store")]
         public int StoreId { get; set; }
 
         /// <summary>
-        /// The name of the item
+        /// Vendor's First Name
         /// </summary>
-        public string Name { get; set; }
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
 
         /// <summary>
-        /// The Description of the item
+        /// Vendor's Last Name
         /// </summary>
-        public string Description { get; set; }
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
 
         /// <summary>
-        /// The price of the item
+        /// Commission Rate to pay vendor on items sold
         /// </summary>
-        public decimal Price { get; set; }
+        [Display(Name = "Commision Rate")]
+        public double CommissionRate { get; set; }
 
         /// <summary>
-        /// Flag for if the item has been sold
+        /// The amount of payment the vendor is due
         /// </summary>
-        public bool Sold { get; set; }
+        [Display(Name = "Payment Due")]
+        public decimal PaymentDue { get; set; }
 
         /// <summary>
-        /// Flag for if the vendor had been paid for this item
-        /// </summary>
-        public bool PaymentDistributed { get; set; }
-
-        /// <summary>
-        /// The Id of the owner of this item
-        /// </summary>
-        public int OwnerId { get; set; }
-
-        /// <summary>
-        /// The owner of this item
-        /// </summary>
-        public VendorModel Owner { get; set; }
-
-        /// <summary>
-        /// The display name of this item
+        /// The Vendor's Display Name
         /// </summary>
         public string Display
         {
-            get => $"{ Name } - {Price:C2}";
+            get
+            {
+                //return string.Format("{0} {1} {2} - {2:C2}", FirstName, LastName, PaymentDue);
+                return $"{FirstName} {LastName} ({CommissionRate * 100}%) - {PaymentDue:C2}";
+            }
+        }
+
+        [Display(Name = "Full Name")]
+        public string FullName
+        {
+            get
+            {
+                return $"{FirstName} {LastName}";
+            }
         }
     }
 }

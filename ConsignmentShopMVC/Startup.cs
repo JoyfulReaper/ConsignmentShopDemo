@@ -46,6 +46,8 @@ using ConsignmentShopLibrary;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using ConsignmentShopMVC.Services;
 using ConsignmentShopMVC.ViewModels;
+using AutoMapper;
+using ConsignmentShopLibrary.Models;
 
 namespace ConsignmentShopMVC
 {
@@ -73,6 +75,14 @@ namespace ConsignmentShopMVC
             IConfig config = new Config();
             config.Initiliaze();
             services.AddSingleton(_ => config);
+
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.CreateMap<ItemModel, ItemViewModel>();
+                cfg.CreateMap<StoreModel, StoreViewModel>();
+                cfg.CreateMap<VendorModel, VendorViewModel>();
+                cfg.CreateMap<ItemViewModel, ItemModel>();
+            });
 
             services.AddScoped<IDataAccess, SqlDb>()
                 .AddScoped<IItemData, ItemData>()

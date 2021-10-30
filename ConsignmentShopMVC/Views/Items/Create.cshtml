@@ -21,7 +21,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.*@
 
-@model ConsignmentShopLibrary.Models.ItemModel
+@model ConsignmentShopMVC.ViewModels.ItemCreateViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -35,29 +35,29 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div>
-                <label asp-for="StoreId" class="form-label"></label>
-                <select asp-for="StoreId" class="form-control form-select" asp-items="ViewBag.StoreList"></select>
-                <span asp-validation-for="StoreId" class="text-danger"></span>
+                <label asp-for="Item.StoreId" class="form-label"></label>
+                <select asp-for="Item.StoreId" class="form-control form-select" asp-items="Model.Stores"></select>
+                <span asp-validation-for="Item.StoreId" class="text-danger"></span>
             </div>
             <div>
-                <label asp-for="Name" class="form-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Item.Name" class="form-label"></label>
+                <input asp-for="Item.Name" class="form-control" />
+                <span asp-validation-for="Item.Name" class="text-danger"></span>
             </div>
             <div>
-                <label asp-for="Description" class="form-label"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <label asp-for="Item.Description" class="form-label"></label>
+                <textarea asp-for="Item.Description" class="form-control"></textarea>
+                <span asp-validation-for="Item.Description" class="text-danger"></span>
             </div>
             <div>
-                <label asp-for="Price" class="form-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
+                <label asp-for="Item.Price" class="form-label"></label>
+                <input asp-for="Item.Price" class="form-control" />
+                <span asp-validation-for="Item.Price" class="text-danger"></span>
             </div>
             <div>
-                <label asp-for="OwnerId" class="form-label"></label>
-                <select asp-for="OwnerId" class="form-control form-select" asp-items="ViewBag.VendorList"></select>
-                <span asp-validation-for="OwnerId" class="text-danger"></span>
+                <label asp-for="Item.OwnerId" class="form-label"></label>
+                <select asp-for="Item.OwnerId" class="form-control form-select" asp-items="Model.Vendors"></select>
+                <span asp-validation-for="Item.OwnerId" class="text-danger"></span>
             </div>
             <div>
                 <input type="submit" value="Create" class="mb-3 mt-3 btn btn-primary" />
@@ -67,7 +67,7 @@
 </div>
 
 <div>
-    <a asp-action="Index" asp-route-StoreId="@ViewBag.StoreId">Back to List</a>
+    <a asp-action="Index" asp-route-StoreId="@Model.StoreId">Back to List</a>
 </div>
 
 @section Scripts {

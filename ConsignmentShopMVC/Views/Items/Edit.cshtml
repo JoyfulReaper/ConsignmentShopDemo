@@ -21,7 +21,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.*@
 
-@model ConsignmentShopLibrary.Models.ItemModel
+@model ConsignmentShopMVC.ViewModels.ItemEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -37,39 +37,39 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="@ViewData["Store"]" class="control-label">Store</label>
-                <input asp-for="@ViewData["Store"]" class="form-control" disabled />
-                <span asp-validation-for="StoreId" class="text-danger"></span>
+                <label asp-for="StoreName" class="control-label">Store</label>
+                <input asp-for="StoreName" class="form-control" disabled />
+                <span asp-validation-for="StoreName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Name" class="form-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Item.Name" class="form-label"></label>
+                <input asp-for="Item.Name" class="form-control" />
+                <span asp-validation-for="Item.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="form-label"></label>
-                <textarea asp-for="Description" class="form-control"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <label asp-for="Item.Description" class="form-label"></label>
+                <textarea asp-for="Item.Description" class="form-control"></textarea>
+                <span asp-validation-for="Item.Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Price" class="form-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
+                <label asp-for="Item.Price" class="form-label"></label>
+                <input asp-for="Item.Price" class="form-control" />
+                <span asp-validation-for="Item.Price" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Sold" /> @Html.DisplayNameFor(model => model.Sold)
+                    <input class="form-check-input" asp-for="Item.Sold" /> @Html.DisplayNameFor(model => model.Item.Sold)
                 </label>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="PaymentDistributed" /> @Html.DisplayNameFor(model => model.PaymentDistributed)
+                    <input class="form-check-input" asp-for="Item.PaymentDistributed" /> @Html.DisplayNameFor(model => model.Item.PaymentDistributed)
                 </label>
             </div>
             <div class="form-group">
-                <label asp-for="OwnerId" class="form-label"></label>
-                <select asp-for="OwnerId" class="form-control form-select" asp-items="ViewBag.VendorId"></select>
-                <span asp-validation-for="OwnerId" class="text-danger"></span>
+                <label asp-for="Item.OwnerId" class="form-label"></label>
+                <select asp-for="Item.OwnerId" class="form-control form-select" asp-items="Model.Vendors"></select>
+                <span asp-validation-for="Item.OwnerId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="mt-3 mb-3 btn btn-primary" />
@@ -79,7 +79,7 @@
 </div>
 
 <div>
-    <a asp-action="Index" asp-route-storeId="@Model.StoreId">Back to List</a>
+    <a asp-action="Index" asp-route-storeId="@Model.Item.StoreId">Back to List</a>
 </div>
 
 @section Scripts {

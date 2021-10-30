@@ -23,9 +23,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using AutoMapper;
 using ConsignmentShopLibrary.Data;
 using ConsignmentShopLibrary.Models;
-using Microsoft.AspNetCore.Http;
+using ConsignmentShopMVC.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
@@ -40,14 +41,17 @@ namespace ConsignmentShopMVC.Controllers
         private readonly IItemData _itemData;
         private readonly IStoreData _storeData;
         private readonly IVendorData _vendorData;
+        private readonly IMapper _mapper;
 
         public ItemsController(IItemData itemData,
             IStoreData storeData,
-            IVendorData vendorData)
+            IVendorData vendorData,
+            IMapper mapper)
         {
             _itemData = itemData;
             _storeData = storeData;
             _vendorData = vendorData;
+            _mapper = mapper;
         }
 
         // GET: ItemsController
@@ -59,13 +63,14 @@ namespace ConsignmentShopMVC.Controllers
                 return NotFound();
             }
 
-            var store = await _storeData.LoadStore((int)storeId);
+            var store = _mapper.Map<StoreViewModel>(await _storeData.LoadStore((int)storeId));
+
             if (store == null)
             {
                 return NotFound();
             }
 
-            var items = await _itemData.LoadAllItems((int)storeId);
+            var items = _mapper.Map<List<ItemModel>, IEnumerable<ItemViewModel>>(await _itemData.LoadAllItems((int)storeId));
 
             ViewBag.StoreId = storeId;
             ViewData["Store"] = store.Name;
@@ -76,121 +81,131 @@ namespace ConsignmentShopMVC.Controllers
         // GET: ItemsController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var item = await _itemData.LoadItem(id);
+            var item = _mapper.Map<ItemModel, ItemViewModel>(await _itemData.LoadItem(id));
             if(item == null)
             {
                 return NotFound();
             }
 
-            var store = await _storeData.LoadStore(item.StoreId);
+            var store = _mapper.Map<StoreModel, StoreViewModel>( await _storeData.LoadStore(item.StoreId));
             if(store == null)
             {
                 return NotFound();
             }
 
-            var owner = await _vendorData.LoadVendor(item.OwnerId);
+            var owner = _mapper.Map<VendorModel, VendorViewModel>( await _vendorData.LoadVendor(item.OwnerId));
             if (owner == null)
             {
                 return NotFound();
             }
 
-            ViewData["Store"] = store.Name;
-            ViewData["Owner"] = owner.Display;
+            var vm = new ItemDetailsViewModel
+            {
+                Item = item,
+                Store = store,
+                Owner = owner
+            };
 
-            return View(item);
+            return View(vm);
         }
 
         // GET: ItemsController/Create
         public async Task<IActionResult> Create(int? storeId)
         {
-            var stores = await _storeData.LoadAllStores();
-
-            StoreModel selected = null;
-            List<VendorModel> vendors = null;
+            var stores = _mapper.Map<List<StoreModel>, IEnumerable<StoreViewModel>>(await _storeData.LoadAllStores());
+            StoreViewModel selected = null;
+            List<VendorViewModel> vendors = null;
 
             if(storeId != null)
             {
-                //selected = await _storeData.LoadStore(storeId.Value);
                 selected = stores.Where(s => s.Id == storeId).FirstOrDefault();
-
-                vendors = await _vendorData.LoadAllVendors(storeId.Value);
-                if(vendors == null || vendors.Count < 1)
+                vendors = _mapper.Map<List<VendorModel>, List<VendorViewModel>>(await _vendorData.LoadAllVendors(storeId.Value));
+                if(!vendors.Any())
                 {
                     return RedirectToAction("ShowError", "Home", new { error = $"No vendors exist" });
                 }
             }
 
-            ViewBag.StoreId = storeId;
-            ViewBag.StoreList = new SelectList(stores, "Id", "Name", selected?.Id);
-            ViewBag.VendorList = new SelectList(vendors, "Id", "Display");
+            var vm = new ItemCreateViewModel
+            {
+                Stores = new SelectList(stores, "Id", "Name", selected?.Id),
+                Vendors = new SelectList(vendors, "Id", "Display"),
+                StoreId = selected.Id
+            };
 
-            return View();
+            return View(vm);
         }
 
         // POST: ItemsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("StoreId,Name,Description,Price,OwnerId")] ItemModel item)
+        public async Task<IActionResult> Create(ItemCreateViewModel vmItem)
         {
+            var vm = new ItemCreateViewModel
+            {
+                Item = vmItem.Item
+            };
+
             try
             {
                 if (ModelState.IsValid)
                 {
-                    item.Sold = false;
-                    item.PaymentDistributed = false;
+                    vmItem.Item.Sold = false;
+                    vmItem.Item.PaymentDistributed = false;
 
-                    await _itemData.CreateItem(item);
+                    await _itemData.CreateItem(_mapper.Map<ItemModel>(vmItem.Item));
 
-                    return RedirectToAction(nameof(Index), new { storeId = item.StoreId });
+                    return RedirectToAction(nameof(Index), new { storeId = vmItem.Item.StoreId });
                 }
             }
             catch (Exception e)
             {
                 ModelState.AddModelError(string.Empty, $"An exception occured: {e.Message}");
-                return View(item);
+                return View(vm);
             }
 
-            return View(item);
+            return View(vm);
         }
 
         // GET: ItemsController/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var item = await _itemData.LoadItem(id);
+            var item = _mapper.Map<ItemViewModel>(await _itemData.LoadItem(id));
 
             if(item == null)
             {
                 return NotFound();
             }
 
-            StoreModel store = await _storeData.LoadStore(item.StoreId);
+            StoreViewModel store = _mapper.Map<StoreViewModel>(await _storeData.LoadStore(item.StoreId));
             if (store == null)
             {
                 return NotFound();
             }
-            else
+
+            var vendors = _mapper.Map<IEnumerable<VendorViewModel>>(await _vendorData.LoadAllVendors(store.Id));
+            var selected = _mapper.Map<VendorViewModel>(await _vendorData.LoadVendor(item.OwnerId));
+
+            var vm = new ItemEditViewModel
             {
-                ViewData["Store"] = store.Name;
-                ViewData["Item"] = item.Name;
-            }
+                StoreName = store.Name,
+                Item = item,
+                Vendors = new SelectList(vendors, "Id", "Display", selected?.Id)
+        };
 
-            var vendors = await _vendorData.LoadAllVendors(store.Id);
-            var selected = await _vendorData.LoadVendor(item.OwnerId);
-            ViewBag.VendorId = new SelectList(vendors, "Id", "Display", selected?.Id);
-
-            return View(item);
+            return View(vm);
         }
 
         // POST: ItemsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async  Task<IActionResult> Edit(int id, [Bind("")] ItemModel item)
+        public async  Task<IActionResult> Edit(int id, ItemViewModel item)
         {
             try
             {
                 if(ModelState.IsValid)
                 {
-                    var itemDb = await _itemData.LoadItem(id);
+                    var itemDb = _mapper.Map<ItemViewModel>( await _itemData.LoadItem(id));
                     if(itemDb == null)
                     {
                         return NotFound();
@@ -203,7 +218,7 @@ namespace ConsignmentShopMVC.Controllers
                     itemDb.PaymentDistributed = item.PaymentDistributed;
                     itemDb.Owner = item.Owner;
 
-                    await _itemData.UpdateItem(itemDb);
+                    await _itemData.UpdateItem(_mapper.Map<ItemModel>(itemDb));
 
                     return RedirectToAction(nameof(Index), new { storeId = itemDb.StoreId });
                 }
