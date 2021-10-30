@@ -23,14 +23,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using AutoMapper;
 using ConsignmentShopLibrary.Data;
 using ConsignmentShopLibrary.Models;
 using ConsignmentShopLibrary.Services;
+using ConsignmentShopMVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -42,22 +45,25 @@ namespace ConsignmentShopMVC.Controllers
         private readonly IVendorData _vendorData;
         private readonly IStoreData _storeData;
         private readonly IVendorService _vendorService;
+        private readonly IMapper _mapper;
 
         public VendorsController(IVendorData vendorData,
             IStoreData storeData,
-            IVendorService vendorService)
+            IVendorService vendorService,
+            IMapper mapper)
         {
             _vendorData = vendorData;
             _storeData = storeData;
             _vendorService = vendorService;
+            _mapper = mapper;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PayVendor(int id)
         {
-            var vendor = await _vendorData.LoadVendor(id);
-            var store = await _storeData.LoadStore(vendor.StoreId);
+            var vendor = _mapper.Map<VendorViewModel>( await _vendorData.LoadVendor(id));
+            var store = _mapper.Map<StoreViewModel>( await _storeData.LoadStore(vendor.StoreId));
             if (vendor == null || store == null)
             {
                 return NotFound();
@@ -68,7 +74,7 @@ namespace ConsignmentShopMVC.Controllers
                 return RedirectToAction("Home", "ShowError", new { error = "The store does not have enough money to pay the vendor!" });
             }
 
-            await _vendorService.PayVendor(vendor);
+            await _vendorService.PayVendor(_mapper.Map<VendorModel>(vendor));
 
             return RedirectToAction("Index", new { storeId = store.Id });
         }
@@ -87,7 +93,7 @@ namespace ConsignmentShopMVC.Controllers
                 return NotFound();
             }
 
-            var items = await _vendorData.LoadAllVendors((int)storeId);
+            var items = _mapper.Map<List<VendorViewModel>>(await _vendorData.LoadAllVendors((int)storeId));
 
             ViewBag.Id = storeId;
             ViewData["Store"] = (await _storeData.LoadStore(storeId.Value)).Name;
@@ -98,7 +104,7 @@ namespace ConsignmentShopMVC.Controllers
         // GET: VendorsController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            var vendor = await _vendorData.LoadVendor(id);
+            var vendor = _mapper.Map<VendorViewModel>( await _vendorData.LoadVendor(id));
             if (vendor == null)
             {
                 return NotFound();
@@ -112,14 +118,14 @@ namespace ConsignmentShopMVC.Controllers
         // GET: VendorsController/Create
         public async Task<IActionResult> Create(int? storeId)
         {
-            var stores = await _storeData.LoadAllStores();
+            var stores = _mapper.Map<List<StoreViewModel>>( await _storeData.LoadAllStores());
 
             if (stores == null || stores.Count < 1)
             {
                 return RedirectToAction("ShowError", "Home", new { error = "No stores exist!" });
             }
 
-            StoreModel selected = null;
+            StoreViewModel selected = null;
             if (storeId != null)
             {
                 //selected = await _storeData.LoadStore(storeId.Value);
@@ -135,13 +141,13 @@ namespace ConsignmentShopMVC.Controllers
         // POST: VendorsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("StoreId,FirstName,LastName,CommissionRate")] VendorModel vendor)
+        public async Task<IActionResult> Create([Bind("StoreId,FirstName,LastName,CommissionRate")] VendorViewModel vendor)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    await _vendorData.CreateVendor(vendor);
+                    await _vendorData.CreateVendor(_mapper.Map<VendorModel>(vendor));
                     return RedirectToAction(nameof(Index), new { storeId = vendor.StoreId });
                 }
             }
@@ -156,13 +162,13 @@ namespace ConsignmentShopMVC.Controllers
         // GET: VendorsController/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var vendor = await _vendorData.LoadVendor(id);
+            var vendor = _mapper.Map<VendorViewModel>(await _vendorData.LoadVendor(id));
             if(vendor == null)
             {
                 return NotFound();
             }
 
-            StoreModel store = await _storeData.LoadStore(vendor.StoreId);
+            StoreViewModel store = _mapper.Map<StoreViewModel>(await _storeData.LoadStore(vendor.StoreId));
             if (store == null)
             {
                 return NotFound();
@@ -178,13 +184,13 @@ namespace ConsignmentShopMVC.Controllers
         // POST: VendorsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([Bind("FirstName, LastName, CommissionRate")] VendorModel vendor, int id)
+        public async Task<IActionResult> Edit(VendorViewModel vendor, int id)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var vendorDb = await _vendorData.LoadVendor(id);
+                    var vendorDb = _mapper.Map<VendorViewModel>(await _vendorData.LoadVendor(id));
                     if (vendorDb == null)
                     {
                         return NotFound();
@@ -194,7 +200,7 @@ namespace ConsignmentShopMVC.Controllers
                     vendorDb.LastName = vendor.LastName;
                     vendorDb.CommissionRate = vendor.CommissionRate;
 
-                    await _vendorData.UpdateVendor(vendorDb);
+                    await _vendorData.UpdateVendor(_mapper.Map<VendorModel>(vendorDb));
 
                     return RedirectToAction(nameof(Index), new { storeId = vendorDb.StoreId });
                 }
@@ -210,7 +216,7 @@ namespace ConsignmentShopMVC.Controllers
         // GET: VendorsController/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var vendor = await _vendorData.LoadVendor(id);
+            var vendor = _mapper.Map<VendorViewModel>( await _vendorData.LoadVendor(id));
 
             if(vendor == null)
             {
@@ -229,7 +235,7 @@ namespace ConsignmentShopMVC.Controllers
         {
             try
             {
-                var vendor = await _vendorData.LoadVendor(id);
+                var vendor = _mapper.Map<VendorViewModel>(await _vendorData.LoadVendor(id));
                 if(vendor == null)
                 {
                     return NotFound();
@@ -243,7 +249,7 @@ namespace ConsignmentShopMVC.Controllers
 
                 try
                 {
-                    await _vendorService.RemoveVendor(vendor);
+                    await _vendorService.RemoveVendor(_mapper.Map<VendorModel>(vendor));
                 }
                 catch (InvalidOperationException e)
                 {
