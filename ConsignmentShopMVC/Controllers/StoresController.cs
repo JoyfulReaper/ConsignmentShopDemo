@@ -30,6 +30,7 @@ using ConsignmentShopMVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -39,12 +40,15 @@ namespace ConsignmentShopMVC.Controllers
     public class StoresController : Controller
     {
         private readonly IStoreData _storeData;
+        private readonly IItemData _itemData;
         private readonly IMapper _mapper;
 
         public StoresController(IStoreData storeData,
+            IItemData itemData,
             IMapper mapper)
         {
             _storeData = storeData;
+            _itemData = itemData;
             _mapper = mapper;
         }
 
@@ -68,9 +72,12 @@ namespace ConsignmentShopMVC.Controllers
                 return NotFound();
             }
 
+            var items = _mapper.Map<List<ItemViewModel>>(await _itemData.LoadAllItems(store.Id));
+
             PosVm vm = new PosVm
             {
-                Store = store
+                Store = store,
+                Items = new SelectList(items, "Id", "Name")
             };
 
             return View(vm);
