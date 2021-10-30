@@ -23,10 +23,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using AutoMapper;
 using ConsignmentShopLibrary.Data;
+using ConsignmentShopLibrary.Models;
 using ConsignmentShopMVC.Models;
+using ConsignmentShopMVC.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -36,17 +40,20 @@ namespace ConsignmentShopMVC.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IStoreData _storeData;
+        private readonly IMapper _mapper;
 
         public HomeController(ILogger<HomeController> logger,
-            IStoreData storeData)
+            IStoreData storeData,
+            IMapper mapper)
         {
             _logger = logger;
             _storeData = storeData;
+            _mapper = mapper;
         }
 
         public async Task<IActionResult> Index()
         {
-            var stores = await _storeData.LoadAllStores();
+            var stores = _mapper.Map<List<StoreViewModel>>(await _storeData.LoadAllStores());
 
             return View(stores);
         }

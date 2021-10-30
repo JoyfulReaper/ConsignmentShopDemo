@@ -8,7 +8,7 @@ namespace ConsignmentShopMVC.ViewModels
 {
     public class PosVm
     {
-        public StoreModel Store { get; set; }
+        public StoreViewModel Store { get; set; }
         public IEnumerable<ItemModel> Items { get; set; }
     }
 }

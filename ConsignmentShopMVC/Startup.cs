@@ -82,6 +82,8 @@ namespace ConsignmentShopMVC
                 cfg.CreateMap<StoreModel, StoreViewModel>();
                 cfg.CreateMap<VendorModel, VendorViewModel>();
                 cfg.CreateMap<ItemViewModel, ItemModel>();
+                cfg.CreateMap<StoreViewModel, StoreModel>();
+                cfg.CreateMap<VendorViewModel, VendorModel>();
             });
 
             services.AddScoped<IDataAccess, SqlDb>()

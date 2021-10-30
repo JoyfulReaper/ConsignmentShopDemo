@@ -23,12 +23,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using AutoMapper;
 using ConsignmentShopLibrary.Data;
 using ConsignmentShopLibrary.Models;
 using ConsignmentShopMVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ConsignmentShopMVC.Controllers
@@ -37,16 +39,19 @@ namespace ConsignmentShopMVC.Controllers
     public class StoresController : Controller
     {
         private readonly IStoreData _storeData;
+        private readonly IMapper _mapper;
 
-        public StoresController(IStoreData storeData)
+        public StoresController(IStoreData storeData,
+            IMapper mapper)
         {
             _storeData = storeData;
+            _mapper = mapper;
         }
 
         // GET: StoreController
         public async Task<IActionResult> Index()
         {
-            var stores = await _storeData.LoadAllStores();
+            var stores = _mapper.Map<List<StoreViewModel>>(await _storeData.LoadAllStores());
             return View(stores);
         }
 
@@ -57,7 +62,7 @@ namespace ConsignmentShopMVC.Controllers
                 return NotFound();
             }
 
-            var store = await _storeData.LoadStore(storeId.Value);
+            var store = _mapper.Map<StoreViewModel>(await _storeData.LoadStore(storeId.Value));
             if(store == null)
             {
                 return NotFound();
@@ -80,7 +85,7 @@ namespace ConsignmentShopMVC.Controllers
                 return NotFound();
             }
 
-            var store = await _storeData.LoadStore((int)id);
+            var store = _mapper.Map<StoreViewModel>(await _storeData.LoadStore((int)id));
             if(store == null)
             {
                 return NotFound();
@@ -104,7 +109,7 @@ namespace ConsignmentShopMVC.Controllers
             {
                 store.StoreProfit = 0;
                 store.StoreBank = 0;
-                await _storeData.CreateStore(store);
+                await _storeData.CreateStore(_mapper.Map<StoreModel>(store));
 
                 return RedirectToAction(nameof(Index));
             }
@@ -120,7 +125,7 @@ namespace ConsignmentShopMVC.Controllers
                 return NotFound();
             }
 
-            var store = await _storeData.LoadStore((int)id);
+            var store = _mapper.Map<StoreViewModel>(await _storeData.LoadStore((int)id));
             if (store == null)
             {
                 return NotFound();
@@ -141,7 +146,7 @@ namespace ConsignmentShopMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                var dbStore = await _storeData.LoadStore(id);
+                var dbStore = _mapper.Map<StoreViewModel>( await _storeData.LoadStore(id));
                 if (dbStore == null)
                 {
                     return NotFound();
@@ -149,7 +154,7 @@ namespace ConsignmentShopMVC.Controllers
 
                 dbStore.Name = store.Name;
 
-                await _storeData.UpdateStore(dbStore);
+                await _storeData.UpdateStore(_mapper.Map<StoreModel>(dbStore));
                 return RedirectToAction(nameof(Index));
             }
 
@@ -164,7 +169,7 @@ namespace ConsignmentShopMVC.Controllers
                 return NotFound();
             }
 
-            var store = await _storeData.LoadStore((int)id);
+            var store = _mapper.Map<StoreViewModel>(await _storeData.LoadStore((int)id));
 
             if(store == null)
             {
@@ -179,7 +184,7 @@ namespace ConsignmentShopMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var store = await _storeData.LoadStore(id);
+            var store = _mapper.Map<StoreViewModel>(await _storeData.LoadStore(id));
             if(store == null)
             {
                 return NotFound();
