@@ -77,7 +77,7 @@ namespace ConsignmentShopMVC.Controllers
             PosVm vm = new PosVm
             {
                 Store = store,
-                Items = new SelectList(items, "Id", "Name")
+                Items = new SelectList(items, "Id", "Display")
             };
 
             return View(vm);
